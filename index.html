@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#4A90D9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Kids Words</title>
+    <style>
+        /* ===== ОБЩИЕ СТИЛИ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            min-height: 100vh;
+            min-height: 100dvh;
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 16px;
+            padding-bottom: 80px;
+        }
+
+        /* ===== ЗАГОЛОВКИ ===== */
+        .header {
+            text-align: center;
+            padding: 20px 0 12px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        /* ===== ВКЛАДКИ ===== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #4A90D9;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(74, 144, 217, 0.3);
+        }
+
+        .tab-btn:not(.active):hover {
+            background: #f0f0f0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== КАРТОЧКА КАТЕГОРИИ ===== */
+        .category-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .category-card:active {
+            transform: scale(0.97);
+        }
+
+        .category-card .color-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-right: 12px;
+        }
+
+        .category-card .name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .category-card .count {
+            font-size: 13px;
+            color: #999;
+            background: #f0f0f0;
+            padding: 2px 10px;
+            border-radius: 20px;
+        }
+
+        .category-card .delete-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin-left: 8px;
+        }
+
+        .category-card .edit-btn {
+            background: none;
+            border: none;
+            color: #4A90D9;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        /* ===== КНОПКИ ===== */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: #4A90D9;
+            color: #fff;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .btn-success {
+            background: #34C759;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #4A90D9;
+            border: 2px solid #4A90D9;
+        }
+
+        .btn-sm {
+            padding: 8px 14px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        /* ===== ФОРМЫ ===== */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border 0.2s;
+            background: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4A90D9;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        /* ===== ЦВЕТОВОЙ ВЫБОР ===== */
+        .color-picker {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 8px 0;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .color-option.active {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        /* ===== КАРТОЧКА СЛОВА ===== */
+        .word-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+
+        .word-item .word-info {
+            flex: 1;
+        }
+
+        .word-item .word-original {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .word-item .word-translation {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .word-item .word-transcription {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .word-item .word-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .word-item .word-actions button {
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 6px;
+        }
+
+        .word-item .word-actions .edit-word {
+            color: #4A90D9;
+        }
+
+        .word-item .word-actions .delete-word {
+            color: #ff6b6b;
+        }
+
+        /* ===== КАРТОЧКИ ДЛЯ ИЗУЧЕНИЯ ===== */
+        .flashcard-container {
+            perspective: 1000px;
+            margin: 20px 0 30px;
+        }
+
+        .flashcard {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 20px;
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform 0.3s;
+            user-select: none;
+        }
+
+        .flashcard:active {
+            transform: scale(0.97);
+        }
+
+        .flashcard .word {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .flashcard .transcription {
+            font-size: 18px;
+            color: #888;
+        }
+
+        .flashcard .translation {
+            font-size: 32px;
+            font-weight: 600;
+            color: #4A90D9;
+        }
+
+        .flashcard .hint {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 16px;
+        }
+
+        .flashcard-controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 16px 0;
+        }
+
+        .flashcard-controls button {
+            background: none;
+            border: none;
+            font-size: 36px;
+            cursor: pointer;
+            padding: 8px 16px;
+            color: #4A90D9;
+            transition: transform 0.2s;
+        }
+
+        .flashcard-controls button:active {
+            transform: scale(0.9);
+        }
+
+        .flashcard-controls button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .flashcard-progress {
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* ===== ТЕСТ "ВЫБЕРИ ПЕРЕВОД" ===== */
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .quiz-option {
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 14px;
+            background: #fff;
+            font-size: 17px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .quiz-option:active {
+            transform: scale(0.97);
+        }
+
+        .quiz-option.correct {
+            border-color: #34C759;
+            background: #e8f9ed;
+        }
+
+        .quiz-option.wrong {
+            border-color: #ff6b6b;
+            background: #fde8e8;
+        }
+
+        .quiz-option.reveal-correct {
+            border-color: #34C759;
+            background: #e8f9ed;
+        }
+
+        .quiz-option:disabled {
+            cursor: not-allowed;
+        }
+
+        .quiz-score {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 12px 0;
+        }
+
+        /* ===== РЕЗУЛЬТАТЫ ===== */
+        .result-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
+        .result-card .score-big {
+            font-size: 48px;
+            font-weight: 700;
+            color: #4A90D9;
+        }
+
+        .result-card .score-label {
+            font-size: 14px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .result-card .mistakes-list {
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .result-card .mistake-item {
+            padding: 8px 12px;
+            background: #fde8e8;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        .result-card .mistake-item .correct-answer {
+            color: #34C759;
+            font-weight: 600;
+        }
+
+        /* ===== СТАТИСТИКА ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .stats-item {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+
+        .stats-item .value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .stats-item .label {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* ===== МОДАЛЬНОЕ ОКНО ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-content .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .modal-content .modal-close {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        /* ===== ОБЩИЕ УТИЛИТЫ ===== */
+        .hidden { display: none !important; }
+        .mt-8 { margin-top: 8px; }
+        .mt-16 { margin-top: 16px; }
+        .mb-8 { margin-bottom: 8px; }
+        .mb-16 { margin-bottom: 16px; }
+        .flex { display: flex; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .gap-8 { gap: 8px; }
+        .gap-12 { gap: 12px; }
+        .text-center { text-align: center; }
+        .text-muted { color: #999; font-size: 14px; }
+
+        /* ===== АДАПТИВНОСТЬ ===== */
+        @media (max-width: 400px) {
+            .flashcard .word { font-size: 32px; }
+            .flashcard .translation { font-size: 26px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (min-width: 481px) {
+            .app-container { padding: 24px; }
+        }
+
+        /* ===== ПУСТОЕ СОСТОЯНИЕ ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .empty-state .title {
+            font-weight: 600;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" class="app-container">
+    <!-- ЗАГОЛОВОК -->
+    <div class="header">
+        <h1>📚 Kids Words</h1>
+        <p>Учим английские слова легко и весело</p>
+    </div>
+
+    <!-- ВКЛАДКИ -->
+    <div class="tabs" id="tabs">
+        <button class="tab-btn active" data-tab="categories">📂 Категории</button>
+        <button class="tab-btn" data-tab="learn">🧠 Учить</button>
+        <button class="tab-btn" data-tab="stats">📊 Статистика</button>
+    </div>
+
+    <!-- ВКЛАДКА: КАТЕГОРИИ -->
+    <div id="tab-categories" class="tab-content active">
+        <div class="flex-between mb-16">
+            <span style="font-weight:600; font-size:18px;">Ваши категории</span>
+            <button class="btn btn-primary btn-sm" onclick="showCreateCategoryModal()">➕ Создать</button>
+        </div>
+        <div id="categories-list"></div>
+    </div>
+
+    <!-- ВКЛАДКА: УЧИТЬ -->
+    <div id="tab-learn" class="tab-content">
+        <div id="learn-content">
+            <div class="empty-state">
+                <div class="icon">📖</div>
+                <div class="title">Выберите категорию для изучения</div>
+                <p class="text-muted mt-8">Перейдите во вкладку «Категории» и нажмите на нужную</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВКЛАДКА: СТАТИСТИКА -->
+    <div id="tab-stats" class="tab-content">
+        <div id="stats-content">
+            <div class="empty-state">
+                <div class="icon">📊</div>
+                <div class="title">Статистика появится после прохождения тестов</div>
+                <p class="text-muted mt-8">Изучайте слова и проходите тесты, чтобы видеть прогресс</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== МОДАЛЬНОЕ ОКНО ===== -->
+<div id="modal" class="modal-overlay hidden" onclick="if(event.target===this) closeModal()">
+    <div class="modal-content" id="modal-body">
+        <!-- Содержимое генерируется динамически -->
+    </div>
+</div>
+
+<script>
+// ============================================================
+// 1. ДАННЫЕ
+// ============================================================
+
+const DEFAULT_CATEGORIES = [
+    { id: 'cat1', name: '🐱 Животные', color: '#B8E1FC', words: [
+        { original: 'cat', translation: 'кошка', transcription: '[kæt]' },
+        { original: 'dog', translation: 'собака', transcription: '[dɒɡ]' },
+        { original: 'bird', translation: 'птица', transcription: '[bɜːd]' },
+        { original: 'fish', translation: 'рыба', transcription: '[fɪʃ]' },
+        { original: 'rabbit', translation: 'кролик', transcription: '[ˈræbɪt]' },
+        { original: 'mouse', translation: 'мышь', transcription: '[maʊs]' },
+        { original: 'frog', translation: 'лягушка', transcription: '[frɒɡ]' },
+        { original: 'horse', translation: 'лошадь', transcription: '[hɔːs]' },
+        { original: 'cow', translation: 'корова', transcription: '[kaʊ]' },
+        { original: 'pig', translation: 'свинья', transcription: '[pɪɡ]' },
+        { original: 'sheep', translation: 'овца', transcription: '[ʃiːp]' },
+        { original: 'duck', translation: 'утка', transcription: '[dʌk]' },
+        { original: 'elephant', translation: 'слон', transcription: '[ˈelɪfənt]' },
+        { original: 'giraffe', translation: 'жираф', transcription: '[dʒɪˈrɑːf]' },
+        { original: 'lion', translation: 'лев', transcription: '[ˈlaɪən]' },
+        { original: 'tiger', translation: 'тигр', transcription: '[ˈtaɪɡə]' },
+        { original: 'monkey', translation: 'обезьяна', transcription: '[ˈmʌŋki]' },
+        { original: 'zebra', translation: 'зебра', transcription: '[ˈziːbrə]' },
+        { original: 'chimp', translation: 'шимпанзе', transcription: '[tʃɪmp]' }
+    ]},
+    { id: 'cat2', name: '👕 Одежда', color: '#C8E6D9', words: [
+        { original: 'dress', translation: 'платье', transcription: '[dres]' },
+        { original: 'shirt', translation: 'рубашка', transcription: '[ʃɜːt]' },
+        { original: 'T-shirt', translation: 'футболка', transcription: '[ˈtiː ʃɜːt]' },
+        { original: 'skirt', translation: 'юбка', transcription: '[skɜːt]' },
+        { original: 'trousers', translation: 'брюки', transcription: '[ˈtraʊzəz]' },
+        { original: 'jeans', translation: 'джинсы', transcription: '[dʒiːnz]' },
+        { original: 'shoes', translation: 'туфли', transcription: '[ʃuːz]' },
+        { original: 'boots', translation: 'ботинки', transcription: '[buːts]' },
+        { original: 'socks', translation: 'носки', transcription: '[sɒks]' },
+        { original: 'hat', translation: 'шапка', transcription: '[hæt]' },
+        { original: 'cap', translation: 'кепка', transcription: '[kæp]' },
+        { original: 'coat', translation: 'пальто', transcription: '[kəʊt]' },
+        { original: 'jacket', translation: 'куртка', transcription: '[ˈdʒækɪt]' },
+        { original: 'sweater', translation: 'свитер', transcription: '[ˈswetə]' },
+        { original: 'scarf', translation: 'шарф', transcription: '[skɑːf]' },
+        { original: 'gloves', translation: 'перчатки', transcription: '[ɡlʌvz]' },
+        { original: 'fair hair', translation: 'светлые волосы', transcription: '[\'feə heə(r)]' },
+        { original: 'dark hair', translation: 'тёмные волосы', transcription: '[dɑːk heə(r)]' }
+    ]},
+    { id: 'cat3', name: '🏠 Дом', color: '#E0D4F5', words: [
+        { original: 'house', translation: 'дом', transcription: '[haʊs]' },
+        { original: 'flat', translation: 'квартира', transcription: '[flæt]' },
+        { original: 'room', translation: 'комната', transcription: '[ruːm]' },
+        { original: 'kitchen', translation: 'кухня', transcription: '[ˈkɪtʃɪn]' },
+        { original: 'bedroom', translation: 'спальня', transcription: '[ˈbedruːm]' },
+        { original: 'bathroom', translation: 'ванная', transcription: '[ˈbɑːθruːm]' },
+        { original: 'living room', translation: 'гостиная', transcription: '[ˈlɪvɪŋ ruːm]' },
+        { original: 'door', translation: 'дверь', transcription: '[dɔː]' },
+        { original: 'window', translation: 'окно', transcription: '[ˈwɪndəʊ]' },
+        { original: 'wall', translation: 'стена', transcription: '[wɔːl]' },
+        { original: 'floor', translation: 'пол', transcription: '[flɔː]' },
+        { original: 'ceiling', translation: 'потолок', transcription: '[ˈsiːlɪŋ]' },
+        { original: 'table', translation: 'стол', transcription: '[ˈteɪbəl]' },
+        { original: 'chair', translation: 'стул', transcription: '[tʃeə]' },
+        { original: 'bed', translation: 'кровать', transcription: '[bed]' },
+        { original: 'sofa', translation: 'диван', transcription: '[ˈsəʊfə]' },
+        { original: 'wardrobe', translation: 'шкаф', transcription: '[ˈwɔːdrəʊb]' },
+        { original: 'shelf', translation: 'полка', transcription: '[ʃelf]' },
+        { original: 'candle', translation: 'свеча', transcription: '[\'kændl]' },
+        { original: 'toy box', translation: 'коробка для игрушек', transcription: '[ˈtɔɪ bɒks]' }
+    ]},
+    { id: 'cat4', name: '🍎 Еда', color: '#FFE0B5', words: [
+        { original: 'apple', translation: 'яблоко', transcription: '[ˈæpəl]' },
+        { original: 'banana', translation: 'банан', transcription: '[bəˈnɑːnə]' },
+        { original: 'orange', translation: 'апельсин', transcription: '[ˈɒrɪndʒ]' },
+        { original: 'pear', translation: 'груша', transcription: '[peə]' },
+        { original: 'grape', translation: 'виноград', transcription: '[ɡreɪp]' },
+        { original: 'bread', translation: 'хлеб', transcription: '[bred]' },
+        { original: 'butter', translation: 'масло', transcription: '[ˈbʌtə]' },
+        { original: 'milk', translation: 'молоко', transcription: '[mɪlk]' },
+        { original: 'juice', translation: 'сок', transcription: '[dʒuːs]' },
+        { original: 'water', translation: 'вода', transcription: '[ˈwɔːtə]' },
+        { original: 'cake', translation: 'торт', transcription: '[keɪk]' },
+        { original: 'ice cream', translation: 'мороженое', transcription: '[ˈaɪs kriːm]' },
+        { original: 'sweet', translation: 'конфета', transcription: '[swiːt]' },
+        { original: 'meat', translation: 'мясо', transcription: '[miːt]' },
+        { original: 'egg', translation: 'яйцо', transcription: '[eɡ]' },
+        { original: 'cheese', translation: 'сыр', transcription: '[tʃiːz]' },
+        { original: 'soup', translation: 'суп', transcription: '[suːp]' },
+        { original: 'tea', translation: 'чай', transcription: '[tiː]' },
+        { original: 'breakfast', translation: 'завтрак', transcription: '[ˈbrekfəst]' },
+        { original: 'lunch', translation: 'обед', transcription: '[lʌntʃ]' },
+        { original: 'dinner', translation: 'ужин', transcription: '[ˈdɪnə]' }
+    ]},
+    { id: 'cat5', name: '🏃 Глаголы', color: '#FADADD', words: [
+        { original: 'run', translation: 'бегать', transcription: '[rʌn]' },
+        { original: 'walk', translation: 'гулять', transcription: '[wɔːk]' },
+        { original: 'jump', translation: 'прыгать', transcription: '[dʒʌmp]' },
+        { original: 'swim', translation: 'плавать', transcription: '[swɪm]' },
+        { original: 'sleep', translation: 'спать', transcription: '[sliːp]' },
+        { original: 'eat', translation: 'есть', transcription: '[iːt]' },
+        { original: 'drink', translation: 'пить', transcription: '[drɪŋk]' },
+        { original: 'play', translation: 'играть', transcription: '[pleɪ]' },
+        { original: 'read', translation: 'читать', transcription: '[riːd]' },
+        { original: 'write', translation: 'писать', transcription: '[raɪt]' },
+        { original: 'draw', translation: 'рисовать', transcription: '[drɔː]' },
+        { original: 'sing', translation: 'петь', transcription: '[sɪŋ]' },
+        { original: 'dance', translation: 'танцевать', transcription: '[dɑːns]' },
+        { original: 'watch', translation: 'смотреть', transcription: '[wɒtʃ]' },
+        { original: 'listen', translation: 'слушать', transcription: '[ˈlɪsn]' },
+        { original: 'go', translation: 'идти', transcription: '[ɡəʊ]' },
+        { original: 'come', translation: 'приходить', transcription: '[kʌm]' },
+        { original: 'sit', translation: 'сидеть', transcription: '[sɪt]' },
+        { original: 'stand', translation: 'стоять', transcription: '[stænd]' },
+        { original: 'open', translation: 'открывать', transcription: '[ˈəʊpən]' },
+        { original: 'close', translation: 'закрывать', transcription: '[kləʊz]' },
+        { original: 'give', translation: 'давать', transcription: '[ɡɪv]' },
+        { original: 'take', translation: 'брать', transcription: '[teɪk]' },
+        { original: 'help', translation: 'помогать', transcription: '[help]' },
+        { original: 'like', translation: 'нравиться', transcription: '[laɪk]' }
+    ]},
+    { id: 'cat6', name: '🎨 Прилагательные', color: '#B8F0E0', words: [
+        { original: 'big', translation: 'большой', transcription: '[bɪɡ]' },
+        { original: 'small', translation: 'маленький', transcription: '[smɔːl]' },
+        { original: 'long', translation: 'длинный', transcription: '[lɒŋ]' },
+        { original: 'short', translation: 'короткий', transcription: '[ʃɔːt]' },
+        { original: 'tall', translation: 'высокий', transcription: '[tɔːl]' },
+        { original: 'happy', translation: 'счастливый', transcription: '[ˈhæpi]' },
+        { original: 'sad', translation: 'грустный', transcription: '[sæd]' },
+        { original: 'good', translation: 'хороший', transcription: '[ɡʊd]' },
+        { original: 'bad', translation: 'плохой', transcription: '[bæd]' },
+        { original: 'nice', translation: 'хороший', transcription: '[naɪs]' },
+        { original: 'new', translation: 'новый', transcription: '[njuː]' },
+        { original: 'old', translation: 'старый', transcription: '[əʊld]' },
+        { original: 'clean', translation: 'чистый', transcription: '[kliːn]' },
+        { original: 'dirty', translation: 'грязный', transcription: '[ˈdɜːti]' },
+        { original: 'red', translation: 'красный', transcription: '[red]' },
+        { original: 'blue', translation: 'синий', transcription: '[bluː]' },
+        { original: 'yellow', translation: 'жёлтый', transcription: '[ˈjeləʊ]' },
+        { original: 'green', translation: 'зелёный', transcription: '[ɡriːn]' },
+        { original: 'pink', translation: 'розовый', transcription: '[pɪŋk]' },
+        { original: 'purple', translation: 'фиолетовый', transcription: '[ˈpɜːpl]' },
+        { original: 'orange', translation: 'оранжевый', transcription: '[ˈɒrɪndʒ]' },
+        { original: 'black', translation: 'чёрный', transcription: '[blæk]' },
+        { original: 'white', translation: 'белый', transcription: '[waɪt]' },
+        { original: 'brown', translation: 'коричневый', transcription: '[braʊn]' }
+    ]},
+    { id: 'cat7', name: '🌤️ Погода', color: '#F0D4F0', words: [
+        { original: 'sun', translation: 'солнце', transcription: '[sʌn]' },
+        { original: 'sunny', translation: 'солнечно', transcription: '[ˈsʌni]' },
+        { original: 'rain', translation: 'дождь', transcription: '[reɪn]' },
+        { original: 'rainy', translation: 'дождливо', transcription: '[ˈreɪni]' },
+        { original: 'snow', translation: 'снег', transcription: '[snəʊ]' },
+        { original: 'wind', translation: 'ветер', transcription: '[wɪnd]' },
+        { original: 'windy', translation: 'ветрено', transcription: '[ˈwɪndi]' },
+        { original: 'cloud', translation: 'облако', transcription: '[klaʊd]' },
+        { original: 'cloudy', translation: 'облачно', transcription: '[ˈklaʊdi]' },
+        { original: 'sky', translation: 'небо', transcription: '[skaɪ]' },
+        { original: 'tree', translation: 'дерево', transcription: '[triː]' },
+        { original: 'flower', translation: 'цветок', transcription: '[ˈflaʊə]' },
+        { original: 'grass', translation: 'трава', transcription: '[ɡrɑːs]' },
+        { original: 'river', translation: 'река', transcription: '[ˈrɪvə]' },
+        { original: 'lake', translation: 'озеро', transcription: '[leɪk]' },
+        { original: 'sea', translation: 'море', transcription: '[siː]' },
+        { original: 'summer', translation: 'лето', transcription: '[ˈsʌmə]' },
+        { original: 'winter', translation: 'зима', transcription: '[ˈwɪntə]' },
+        { original: 'spring', translation: 'весна', transcription: '[spriŋ]' },
+        { original: 'autumn', translation: 'осень', transcription: '[ˈɔːtəm]' },
+        { original: 'warm', translation: 'тёплый', transcription: '[wɔːm]' },
+        { original: 'cold', translation: 'холодный', transcription: '[kəʊld]' },
+        { original: 'hot', translation: 'жаркий', transcription: '[hɒt]' }
+    ]},
+    { id: 'cat8', name: '🏫 Школа', color: '#FFF0B5', words: [
+        { original: 'school', translation: 'школа', transcription: '[skuːl]' },
+        { original: 'classroom', translation: 'класс', transcription: '[ˈklɑːsruːm]' },
+        { original: 'teacher', translation: 'учитель', transcription: '[ˈtiːtʃə]' },
+        { original: 'pupil', translation: 'ученик', transcription: '[ˈpjuːpəl]' },
+        { original: 'desk', translation: 'парта', transcription: '[desk]' },
+        { original: 'book', translation: 'книга', transcription: '[bʊk]' },
+        { original: 'notebook', translation: 'тетрадь', transcription: '[ˈnəʊtbʊk]' },
+        { original: 'pen', translation: 'ручка', transcription: '[pen]' },
+        { original: 'pencil', translation: 'карандаш', transcription: '[ˈpensl]' },
+        { original: 'rubber', translation: 'ластик', transcription: '[ˈrʌbə]' },
+        { original: 'ruler', translation: 'линейка', transcription: '[ˈruːlə]' },
+        { original: 'bag', translation: 'сумка', transcription: '[bæɡ]' },
+        { original: 'toy', translation: 'игрушка', transcription: '[tɔɪ]' },
+        { original: 'ball', translation: 'мяч', transcription: '[bɔːl]' },
+        { original: 'doll', translation: 'кукла', transcription: '[dɒl]' }
+    ]},
+    { id: 'cat9', name: '🔢 Числа', color: '#D4E0F5', words: [
+        { original: 'one', translation: 'один', transcription: '[wʌn]' },
+        { original: 'two', translation: 'два', transcription: '[tuː]' },
+        { original: 'three', translation: 'три', transcription: '[θriː]' },
+        { original: 'four', translation: 'четыре', transcription: '[fɔː]' },
+        { original: 'five', translation: 'пять', transcription: '[faɪv]' },
+        { original: 'six', translation: 'шесть', transcription: '[sɪks]' },
+        { original: 'seven', translation: 'семь', transcription: '[ˈsevən]' },
+        { original: 'eight', translation: 'восемь', transcription: '[eɪt]' },
+        { original: 'nine', translation: 'девять', transcription: '[naɪn]' },
+        { original: 'ten', translation: 'десять', transcription: '[ten]' },
+        { original: 'eleven', translation: 'одиннадцать', transcription: '[ɪˈlevən]' },
+        { original: 'twelve', translation: 'двенадцать', transcription: '[twelv]' },
+        { original: 'thirteen', translation: 'тринадцать', transcription: '[ˌθɜːˈtiːn]' },
+        { original: 'fourteen', translation: 'четырнадцать', transcription: '[ˌfɔːˈtiːn]' },
+        { original: 'fifteen', translation: 'пятнадцать', transcription: '[ˌfɪfˈtiːn]' },
+        { original: 'sixteen', translation: 'шестнадцать', transcription: '[ˌsɪkˈstiːn]' },
+        { original: 'seventeen', translation: 'семнадцать', transcription: '[ˌsevənˈtiːn]' },
+        { original: 'eighteen', translation: 'восемнадцать', transcription: '[ˌeɪˈtiːn]' },
+        { original: 'nineteen', translation: 'девятнадцать', transcription: '[ˌnaɪnˈtiːn]' },
+        { original: 'twenty', translation: 'двадцать', transcription: '[ˈtwenti]' }
+    ]},
+    { id: 'cat10', name: '❓ Вопросы', color: '#D4E0F5', words: [
+        { original: 'what', translation: 'что', transcription: '[wɒt]' },
+        { original: 'who', translation: 'кто', transcription: '[huː]' },
+        { original: 'where', translation: 'где', transcription: '[weə]' },
+        { original: 'when', translation: 'когда', transcription: '[wen]' },
+        { original: 'why', translation: 'почему', transcription: '[waɪ]' },
+        { original: 'how', translation: 'как', transcription: '[haʊ]' },
+        { original: 'how many', translation: 'сколько', transcription: '[haʊ ˈmeni]' },
+        { original: 'in', translation: 'в', transcription: '[ɪn]' },
+        { original: 'on', translation: 'на', transcription: '[ɒn]' },
+        { original: 'under', translation: 'под', transcription: '[ˈʌndə]' },
+        { original: 'behind', translation: 'за', transcription: '[bɪˈhaɪnd]' },
+        { original: 'in front of', translation: 'перед', transcription: '[ɪn frʌnt əv]' },
+        { original: 'between', translation: 'между', transcription: '[bɪˈtwiːn]' },
+        { original: 'near', translation: 'рядом', transcription: '[nɪə]' },
+        { original: 'with', translation: 'с', transcription: '[wɪð]' },
+        { original: 'without', translation: 'без', transcription: '[wɪˈðaʊt]' },
+        { original: 'for', translation: 'для', transcription: '[fɔː]' },
+        { original: 'to', translation: 'к', transcription: '[tuː]' },
+        { original: 'from', translation: 'от', transcription: '[frɒm]' }
+    ]}
+];
+
+// ============================================================
+// 2. ХРАНИЛИЩЕ (LocalStorage)
+// ============================================================
+
+function loadData() {
+    const stored = localStorage.getItem('kidsWordsData');
+    if (stored) {
+        try {
+            const parsed = JSON.parse(stored);
+            if (parsed && parsed.categories && parsed.categories.length > 0) {
+                return parsed;
+            }
+        } catch (e) {}
+    }
+    // Если данных нет — загружаем предустановленные
+    const defaultData = { categories: DEFAULT_CATEGORIES };
+    saveData(defaultData);
+    return defaultData;
+}
+
+function saveData(data) {
+    localStorage.setItem('kidsWordsData', JSON.stringify(data));
+}
+
+function getCategory(id) {
+    const data = loadData();
+    return data.categories.find(c => c.id === id);
+}
+
+function getCategoryWords(categoryId) {
+    const cat = getCategory(categoryId);
+    return cat ? cat.words : [];
+}
+
+// ============================================================
+// 3. ОТРИСОВКА КАТЕГОРИЙ
+// ============================================================
+
+function renderCategories() {
+    const data = loadData();
+    const container = document.getElementById('categories-list');
+    if (!data.categories || data.categories.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📂</div>
+                <div class="title">Нет категорий</div>
+                <p class="text-muted mt-8">Создайте свою первую категорию</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    data.categories.forEach(cat => {
+        const wordCount = cat.words ? cat.words.length : 0;
+        html += `
+            <div class="category-card" onclick="openCategory('${cat.id}')">
+                <span class="color-dot" style="background:${cat.color}"></span>
+                <span class="name">${cat.name}</span>
+                <span class="count">${wordCount}</span>
+                <button class="edit-btn" onclick="event.stopPropagation(); showEditCategoryModal('${cat.id}')">✏️</button>
+                <button class="delete-btn" onclick="event.stopPropagation(); deleteCategory('${cat.id}')">✕</button>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+// ============================================================
+// 4. ОТКРЫТИЕ КАТЕГОРИИ
+// ============================================================
+
+function openCategory(categoryId) {
+    const cat = getCategory(categoryId);
+    if (!cat) return;
+
+    // Переключаемся на вкладку "Учить"
+    switchTab('learn');
+    
+    const container = document.getElementById('learn-content');
+    const words = cat.words || [];
+    
+    if (words.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📝</div>
+                <div class="title">В категории пока нет слов</div>
+                <p class="text-muted mt-8">Добавьте слова в категории</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Показываем слова в виде карточек для изучения
+    container.innerHTML = `
+        <div class="flex-between mb-16">
+            <span style="font-weight:600; font-size:18px;">${cat.name}</span>
+            <div class="flex gap-8">
+                <button class="btn btn-primary btn-sm" onclick="startFlashcards('${cat.id}')">🃏 Карточки</button>
+                <button class="btn btn-success btn-sm" onclick="startQuiz('${cat.id}')">📝 Тест</button>
+            </div>
+        </div>
+        <div id="mode-container">
+            <div class="empty-state">
+                <div class="icon">👆</div>
+                <div class="title">Выберите режим обучения</div>
+                <p class="text-muted mt-8">Карточки или тест</p>
+            </div>
+        </div>
+        <div id="words-list" class="mt-16">
+            ${words.map((w, i) => `
+                <div class="word-item">
+                    <div class="word-info">
+                        <div class="word-original">${w.original}</div>
+                        <div class="word-translation">${w.translation}</div>
+                        ${w.transcription ? `<div class="word-transcription">${w.transcription}</div>` : ''}
+                    </div>
+                    <div class="word-actions">
+                        <button class="edit-word" onclick="editWord('${cat.id}', ${i})">✏️</button>
+                        <button class="delete-word" onclick="deleteWord('${cat.id}', ${i})">✕</button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+        <button class="btn btn-primary mt-16" onclick="showAddWordModal('${cat.id}')">➕ Добавить слово</button>
+    `;
+}
+
+// ============================================================
+// 5. КАРТОЧКИ (FLASHCARDS)
+// ============================================================
+
+let flashcardState = { categoryId: null, words: [], currentIndex: 0, showTranslation: false };
+
+function startFlashcards(categoryId) {
+    const cat = getCategory(categoryId);
+    if (!cat || !cat.words || cat.words.length === 0) return;
+
+    flashcardState.categoryId = categoryId;
+    flashcardState.words = [...cat.words];
+    flashcardState.currentIndex = 0;
+    flashcardState.showTranslation = false;
+
+    renderFlashcard();
+}
+
+function renderFlashcard() {
+    const container = document.getElementById('mode-container');
+    const words = flashcardState.words;
+    const idx = flashcardState.currentIndex;
+    const word = words[idx];
+    const total = words.length;
+
+    if (!word) {
+        container.innerHTML = `<div class="empty-state"><div class="icon">🎉</div><div class="title">Все слова изучены!</div></div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="flashcard-container">
+            <div class="flashcard" onclick="flipFlashcard()">
+                <div class="word">${flashcardState.showTranslation ? word.translation : word.original}</div>
+                ${!flashcardState.showTranslation && word.transcription ? `<div class="transcription">${word.transcription}</div>` : ''}
+                ${flashcardState.showTranslation ? `<div class="translation">${word.original}</div>` : ''}
+                <div class="hint">${flashcardState.showTranslation ? '👆 Нажми, чтобы увидеть слово' : '👆 Нажми, чтобы увидеть перевод'}</div>
+            </div>
+        </div>
+        <div class="flashcard-progress">${idx+1} / ${total}</div>
+        <div class="flashcard-controls">
+            <button onclick="prevFlashcard()" ${idx === 0 ? 'disabled' : ''}>◀</button>
+            <button onclick="flipFlashcard()">🔄</button>
+            <button onclick="nextFlashcard()" ${idx === total-1 ? 'disabled' : ''}>▶</button>
+        </div>
+        <button class="btn btn-outline mt-8" onclick="finishFlashcards()">✅ Завершить</button>
+    `;
+}
+
+function flipFlashcard() {
+    flashcardState.showTranslation = !flashcardState.showTranslation;
+    renderFlashcard();
+}
+
+function nextFlashcard() {
+    if (flashcardState.currentIndex < flashcardState.words.length - 1) {
+        flashcardState.currentIndex++;
+        flashcardState.showTranslation = false;
+        renderFlashcard();
+    }
+}
+
+function prevFlashcard() {
+    if (flashcardState.currentIndex > 0) {
+        flashcardState.currentIndex--;
+        flashcardState.showTranslation = false;
+        renderFlashcard();
+    }
+}
+
+function finishFlashcards() {
+    const container = document.getElementById('mode-container');
+    container.innerHTML = `
+        <div class="result-card">
+            <div class="score-big">🎉</div>
+            <div class="score-label">Вы просмотрели все карточки!</div>
+            <div class="score-label">Слов: ${flashcardState.words.length}</div>
+            <button class="btn btn-primary mt-16" onclick="startFlashcards('${flashcardState.categoryId}')">🔄 Повторить</button>
+        </div>
+    `;
+}
+
+// ============================================================
+// 6. ТЕСТ "ВЫБЕРИ ПЕРЕВОД"
+// ============================================================
+
+let quizState = { categoryId: null, words: [], currentIndex: 0, score: 0, mistakes: [], answered: false };
+
+function startQuiz(categoryId) {
+    const cat = getCategory(categoryId);
+    if (!cat || !cat.words || cat.words.length < 2) {
+        showToast('Нужно минимум 2 слова для теста');
+        return;
+    }
+
+    quizState.categoryId = categoryId;
+    quizState.words = [...cat.words].sort(() => Math.random() - 0.5);
+    quizState.currentIndex = 0;
+    quizState.score = 0;
+    quizState.mistakes = [];
+    quizState.answered = false;
+
+    renderQuiz();
+}
+
+function renderQuiz() {
+    const container = document.getElementById('mode-container');
+    const words = quizState.words;
+    const idx = quizState.currentIndex;
+    const total = words.length;
+
+    if (idx >= total) {
+        showQuizResults();
+        return;
+    }
+
+    const word = words[idx];
+    const correct = word.translation;
+    const allTranslations = words.map(w => w.translation);
+    const shuffled = allTranslations.sort(() => Math.random() - 0.5);
+    const options = shuffled.slice(0, 4);
+    if (!options.includes(correct)) {
+        options[Math.floor(Math.random() * options.length)] = correct;
+    }
+
+    container.innerHTML = `
+        <div class="flex-between mb-16">
+            <span style="font-weight:600;">${idx+1} / ${total}</span>
+            <span>🏆 ${quizState.score}</span>
+        </div>
+        <div class="flashcard" style="cursor:default; min-height:120px;">
+            <div class="word">${word.original}</div>
+            ${word.transcription ? `<div class="transcription">${word.transcription}</div>` : ''}
+        </div>
+        <div class="quiz-options" id="quiz-options">
+            ${options.map(opt => `
+                <button class="quiz-option" onclick="checkQuizAnswer('${opt}')" data-option="${opt}">
+                    ${opt}
+                </button>
+            `).join('')}
+        </div>
+        <div class="quiz-score" id="quiz-feedback"></div>
+    `;
+    quizState.answered = false;
+}
+
+function checkQuizAnswer(answer) {
+    if (quizState.answered) return;
+    quizState.answered = true;
+
+    const words = quizState.words;
+    const word = words[quizState.currentIndex];
+    const correct = word.translation;
+
+    const options = document.querySelectorAll('.quiz-option');
+    options.forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.option === correct) {
+            btn.classList.add('correct');
+        } else if (btn.dataset.option === answer && answer !== correct) {
+            btn.classList.add('wrong');
+        }
+    });
+
+    const feedback = document.getElementById('quiz-feedback');
+    if (answer === correct) {
+        quizState.score++;
+        feedback.innerHTML = '✅ Правильно! +1 балл';
+        feedback.style.color = '#34C759';
+    } else {
+        quizState.mistakes.push({ word: word.original, correct: correct, userAnswer: answer });
+        feedback.innerHTML = `❌ Неправильно. Правильно: ${correct}`;
+        feedback.style.color = '#ff6b6b';
+    }
+
+    setTimeout(() => {
+        quizState.currentIndex++;
+        renderQuiz();
+    }, 1500);
+}
+
+function showQuizResults() {
+    const container = document.getElementById('mode-container');
+    const total = quizState.words.length;
+    const correct = quizState.score;
+    const mistakes = quizState.mistakes;
+
+    // Сохраняем статистику
+    const stats = getStats();
+    stats.games.push({
+        date: new Date().toISOString(),
+        total: total,
+        correct: correct,
+        mistakes: mistakes.map(m => m.word)
+    });
+    saveStats(stats);
+
+    let mistakesHtml = '';
+    if (mistakes.length > 0) {
+        mistakesHtml = `
+            <div class="mistakes-list">
+                <strong>Ошибки:</strong>
+                ${mistakes.map(m => `
+                    <div class="mistake-item">
+                        ${m.word} — ваш ответ: <span style="color:#ff6b6b;">${m.userAnswer}</span>, 
+                        правильно: <span class="correct-answer">${m.correct}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    container.innerHTML = `
+        <div class="result-card">
+            <div class="score-big">${correct} / ${total}</div>
+            <div class="score-label">${Math.round(correct/total*100)}% правильных ответов</div>
+            <div class="score-label" style="color:#34C759;">🏆 +${correct * 5} баллов</div>
+            ${mistakesHtml}
+            <button class="btn btn-primary mt-16" onclick="startQuiz('${quizState.categoryId}')">🔄 Повторить тест</button>
+            <button class="btn btn-outline mt-8" onclick="openCategory('${quizState.categoryId}')">📚 К словам</button>
+        </div>
+    `;
+}
+
+// ============================================================
+// 7. СТАТИСТИКА
+// ============================================================
+
+function getStats() {
+    const stored = localStorage.getItem('kidsWordsStats');
+    if (stored) {
+        try { return JSON.parse(stored); } catch (e) {}
+    }
+    return { games: [], points: 0 };
+}
+
+function saveStats(stats) {
+    localStorage.setItem('kidsWordsStats', JSON.stringify(stats));
+}
+
+function renderStats() {
+    const stats = getStats();
+    const container = document.getElementById('stats-content');
+
+    if (stats.games.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📊</div>
+                <div class="title">Статистики пока нет</div>
+                <p class="text-muted mt-8">Пройдите тесты, чтобы увидеть прогресс</p>
+            </div>
+        `;
+        return;
+    }
+
+    const totalGames = stats.games.length;
+    const totalCorrect = stats.games.reduce((sum, g) => sum + g.correct, 0);
+    const totalQuestions = stats.games.reduce((sum, g) => sum + g.total, 0);
+    const totalPoints = stats.games.reduce((sum, g) => sum + g.correct * 5, 0);
+    const avg = totalQuestions > 0 ? Math.round(totalCorrect / totalQuestions * 100) : 0;
+
+    let gamesHtml = '';
+    stats.games.slice(-10).reverse().forEach((g, i) => {
+        const date = new Date(g.date);
+        const formattedDate = date.toLocaleDateString('ru-RU');
+        gamesHtml += `
+            <div style="display:flex; justify-content:space-between; padding:8px 12px; background:#f5f5f5; border-radius:8px; margin-bottom:4px;">
+                <span>${formattedDate}</span>
+                <span>${g.correct}/${g.total} (${Math.round(g.correct/g.total*100)}%)</span>
+                <span style="color:#34C759;">+${g.correct * 5}</span>
+            </div>
+        `;
+    });
+
+    container.innerHTML = `
+        <div class="stats-grid">
+            <div class="stats-item">
+                <div class="value">${totalGames}</div>
+                <div class="label">Игр сыграно</div>
+            </div>
+            <div class="stats-item">
+                <div class="value">${avg}%</div>
+                <div class="label">Средний результат</div>
+            </div>
+            <div class="stats-item">
+                <div class="value">${totalPoints}</div>
+                <div class="label">Всего баллов</div>
+            </div>
+        </div>
+        <div style="background:#fff; border-radius:16px; padding:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <strong style="display:block; margin-bottom:12px;">📋 Последние игры</strong>
+            ${gamesHtml}
+        </div>
+        <button class="btn btn-danger mt-16" onclick="clearStats()">🗑️ Очистить статистику</button>
+    `;
+}
+
+function clearStats() {
+    if (confirm('Очистить всю статистику?')) {
+        localStorage.removeItem('kidsWordsStats');
+        renderStats();
+        showToast('Статистика очищена');
+    }
+}
+
+// ============================================================
+// 8. УПРАВЛЕНИЕ КАТЕГОРИЯМИ И СЛОВАМИ
+// ============================================================
+
+function createCategory(name, color) {
+    const data = loadData();
+    const id = 'cat_' + Date.now();
+    data.categories.push({
+        id: id,
+        name: name,
+        color: color,
+        words: []
+    });
+    saveData(data);
+    renderCategories();
+    showToast('✅ Категория создана');
+}
+
+function deleteCategory(id) {
+    if (!confirm('Удалить категорию и все слова в ней?')) return;
+    const data = loadData();
+    data.categories = data.categories.filter(c => c.id !== id);
+    saveData(data);
+    renderCategories();
+    showToast('🗑️ Категория удалена');
+}
+
+function editCategory(id, newName, newColor) {
+    const data = loadData();
+    const cat = data.categories.find(c => c.id === id);
+    if (!cat) return;
+    cat.name = newName;
+    cat.color = newColor;
+    saveData(data);
+    renderCategories();
+    showToast('✏️ Категория обновлена');
+}
+
+function addWord(categoryId, original, translation, transcription) {
+    const data = loadData();
+    const cat = data.categories.find(c => c.id === categoryId);
+    if (!cat) return;
+    cat.words.push({ original, translation, transcription });
+    saveData(data);
+    openCategory(categoryId);
+    showToast('✅ Слово добавлено');
+}
+
+function deleteWord(categoryId, index) {
+    if (!confirm('Удалить слово?')) return;
+    const data = loadData();
+    const cat = data.categories.find(c => c.id === categoryId);
+    if (!cat) return;
+    cat.words.splice(index, 1);
+    saveData(data);
+    openCategory(categoryId);
+    showToast('🗑️ Слово удалено');
+}
+
+function editWord(categoryId, index) {
+    const cat = getCategory(categoryId);
+    if (!cat) return;
+    const word = cat.words[index];
+    showEditWordModal(categoryId, index, word);
+}
+
+// ============================================================
+// 9. МОДАЛЬНЫЕ ОКНА
+// ============================================================
+
+function showModal(html) {
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+}
+
+function showCreateCategoryModal() {
+    showModal(`
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">📂 Новая категория</div>
+        <div class="form-group">
+            <label>Название категории</label>
+            <input type="text" id="new-cat-name" placeholder="Например: Животные" />
+        </div>
+        <div class="form-group">
+            <label>Цвет</label>
+            <div class="color-picker">
+                ${['#B8E1FC','#C8E6D9','#E0D4F5','#FFE0B5','#FADADD','#B8F0E0','#F0D4F0','#FFF0B5','#D4E0F5'].map(c => `
+                    <div class="color-option ${c === '#B8E1FC' ? 'active' : ''}" 
+                         style="background:${c}" onclick="selectColor(this, '${c}')"></div>
+                `).join('')}
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="handleCreateCategory()">Создать</button>
+    `);
+}
+
+function selectColor(el, color) {
+    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    el.dataset.selectedColor = color;
+}
+
+function handleCreateCategory() {
+    const name = document.getElementById('new-cat-name').value.trim();
+    const selected = document.querySelector('.color-option.active');
+    const color = selected ? selected.style.background : '#B8E1FC';
+    if (!name) { showToast('Введите название'); return; }
+    createCategory(name, color);
+    closeModal();
+}
+
+function showAddWordModal(categoryId) {
+    showModal(`
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">➕ Добавить слово</div>
+        <div class="form-group">
+            <label>Слово (на английском)</label>
+            <input type="text" id="new-word-original" placeholder="Например: cat" />
+        </div>
+        <div class="form-group">
+            <label>Перевод</label>
+            <input type="text" id="new-word-translation" placeholder="Например: кошка" />
+        </div>
+        <div class="form-group">
+            <label>Транскрипция (необязательно)</label>
+            <input type="text" id="new-word-transcription" placeholder="Например: [kæt]" />
+        </div>
+        <button class="btn btn-primary" onclick="handleAddWord('${categoryId}')">Добавить</button>
+    `);
+}
+
+function handleAddWord(categoryId) {
+    const original = document.getElementById('new-word-original').value.trim();
+    const translation = document.getElementById('new-word-translation').value.trim();
+    const transcription = document.getElementById('new-word-transcription').value.trim();
+    if (!original || !translation) { showToast('Заполните слово и перевод'); return; }
+    addWord(categoryId, original, translation, transcription);
+    closeModal();
+}
+
+function showEditWordModal(categoryId, index, word) {
+    showModal(`
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">✏️ Редактировать слово</div>
+        <div class="form-group">
+            <label>Слово</label>
+            <input type="text" id="edit-word-original" value="${word.original}" />
+        </div>
+        <div class="form-group">
+            <label>Перевод</label>
+            <input type="text" id="edit-word-translation" value="${word.translation}" />
+        </div>
+        <div class="form-group">
+            <label>Транскрипция</label>
+            <input type="text" id="edit-word-transcription" value="${word.transcription || ''}" />
+        </div>
+        <div class="form-actions">
+            <button class="btn btn-primary" onclick="handleEditWord('${categoryId}', ${index})">Сохранить</button>
+            <button class="btn btn-danger" onclick="handleDeleteWordFromModal('${categoryId}', ${index})">Удалить</button>
+        </div>
+    `);
+}
+
+function handleEditWord(categoryId, index) {
+    const original = document.getElementById('edit-word-original').value.trim();
+    const translation = document.getElementById('edit-word-translation').value.trim();
+    const transcription = document.getElementById('edit-word-transcription').value.trim();
+    if (!original || !translation) { showToast('Заполните все поля'); return; }
+    
+    const data = loadData();
+    const cat = data.categories.find(c => c.id === categoryId);
+    if (!cat) return;
+    cat.words[index] = { original, translation, transcription };
+    saveData(data);
+    closeModal();
+    openCategory(categoryId);
+    showToast('✏️ Слово обновлено');
+}
+
+function handleDeleteWordFromModal(categoryId, index) {
+    if (!confirm('Удалить слово?')) return;
+    const data = loadData();
+    const cat = data.categories.find(c => c.id === categoryId);
+    if (!cat) return;
+    cat.words.splice(index, 1);
+    saveData(data);
+    closeModal();
+    openCategory(categoryId);
+    showToast('🗑️ Слово удалено');
+}
+
+function showEditCategoryModal(categoryId) {
+    const cat = getCategory(categoryId);
+    if (!cat) return;
+    showModal(`
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">✏️ Редактировать категорию</div>
+        <div class="form-group">
+            <label>Название</label>
+            <input type="text" id="edit-cat-name" value="${cat.name}" />
+        </div>
+        <div class="form-group">
+            <label>Цвет</label>
+            <div class="color-picker">
+                ${['#B8E1FC','#C8E6D9','#E0D4F5','#FFE0B5','#FADADD','#B8F0E0','#F0D4F0','#FFF0B5','#D4E0F5'].map(c => `
+                    <div class="color-option ${c === cat.color ? 'active' : ''}" 
+                         style="background:${c}" onclick="selectColor(this, '${c}')"></div>
+                `).join('')}
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="handleEditCategory('${categoryId}')">Сохранить</button>
+    `);
+}
+
+function handleEditCategory(categoryId) {
+    const name = document.getElementById('edit-cat-name').value.trim();
+    const selected = document.querySelector('.color-option.active');
+    const color = selected ? selected.style.background : '#B8E1FC';
+    if (!name) { showToast('Введите название'); return; }
+    editCategory(categoryId, name, color);
+    closeModal();
+}
+
+// ============================================================
+// 10. ВКЛАДКИ
+// ============================================================
+
+function switchTab(tabName) {
+    // Обновляем кнопки
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+    
+    // Обновляем содержимое
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.toggle('active', el.id === 'tab-' + tabName);
+    });
+
+    // Рендерим контент для вкладок
+    if (tabName === 'categories') {
+        renderCategories();
+    } else if (tabName === 'stats') {
+        renderStats();
+    }
+}
+
+// Назначаем обработчики на вкладки
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        switchTab(btn.dataset.tab);
+    });
+});
+
+// ============================================================
+// 11. УВЕДОМЛЕНИЯ (TOAST)
+// ============================================================
+
+function showToast(message) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.8);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 14px;
+        z-index: 2000;
+        max-width: 90%;
+        text-align: center;
+        animation: fadeIn 0.3s ease;
+    `;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
+
+// ============================================================
+// 12. ИНИЦИАЛИЗАЦИЯ
+// ============================================================
+
+// Инициализация данных
+loadData();
+
+// Рендеринг начальной вкладки
+renderCategories();
+
+// Регистрируем Service Worker (для PWA)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+        .then(() => console.log('✅ Service Worker зарегистрирован'))
+        .catch(() => console.log('⚠️ Service Worker не зарегистрирован'));
+}
+
+console.log('📚 Kids Words App готов!');
+</script>
+</body>
+</html>
