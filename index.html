@@ -598,6 +598,53 @@
             color: #999;
         }
 
+        /* ===== КАТЕГОРИЯ (ОТКРЫТАЯ) ===== */
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .category-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== РЕЖИМ ОБУЧЕНИЯ (ПОЛНЫЙ ЭКРАН) ===== */
+        .mode-fullscreen {
+            padding: 0;
+        }
+
+        .mode-fullscreen .flashcard {
+            min-height: 320px;
+        }
+
+        .mode-fullscreen .flashcard .word {
+            font-size: 48px;
+        }
+
+        .mode-fullscreen .flashcard .translation {
+            font-size: 38px;
+        }
+
+        /* ===== СПИСОК СЛОВ (СКРЫТЫЙ В РЕЖИМЕ ОБУЧЕНИЯ) ===== */
+        .words-list-container {
+            margin-top: 16px;
+        }
+
+        .words-list-container.hidden {
+            display: none;
+        }
+
         /* ===== ОБЩИЕ УТИЛИТЫ ===== */
         .hidden { display: none !important; }
         .mt-8 { margin-top: 8px; }
@@ -616,6 +663,7 @@
             .flashcard .word { font-size: 32px; }
             .flashcard .translation { font-size: 26px; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
+            .category-actions .btn-sm { font-size: 12px; padding: 6px 10px; }
         }
 
         @media (min-width: 481px) {
@@ -637,6 +685,21 @@
         .empty-state .title {
             font-weight: 600;
             color: #666;
+        }
+
+        /* ===== ВОЗВРАТ К СПИСКУ ===== */
+        .back-to-list {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: #4A90D9;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 0;
+            margin-bottom: 12px;
         }
     </style>
 </head>
@@ -995,12 +1058,18 @@ function renderCategories() {
 }
 
 // ============================================================
-// 4. ОТКРЫТИЕ КАТЕГОРИИ
+// 4. ОТКРЫТИЕ КАТЕГОРИИ (АДАПТИРОВАННОЕ)
 // ============================================================
+
+let currentCategoryId = null;
+let isModeActive = false; // Режим обучения активен (скрываем список слов)
 
 function openCategory(categoryId) {
     const cat = getCategory(categoryId);
     if (!cat) return;
+
+    currentCategoryId = categoryId;
+    isModeActive = false;
 
     switchTab('learn');
     
@@ -1019,44 +1088,65 @@ function openCategory(categoryId) {
     }
 
     container.innerHTML = `
-        <div class="flex-between mb-16">
-            <span style="font-weight:600; font-size:18px;">${cat.name}</span>
-            <div class="flex gap-8">
+        <!-- Шапка категории -->
+        <div class="category-header">
+            <span class="category-title">${cat.name}</span>
+            <div class="category-actions">
                 <button class="btn btn-primary btn-sm" onclick="startFlashcards('${cat.id}')">🃏 Карточки</button>
                 <button class="btn btn-success btn-sm" onclick="startQuiz('${cat.id}')">📝 Тест</button>
             </div>
         </div>
-        <div id="mode-container">
-            <div class="empty-state">
-                <div class="icon">👆</div>
-                <div class="title">Выберите режим обучения</div>
-                <p class="text-muted mt-8">Карточки или тест</p>
+        
+        <!-- Режим обучения (полный экран) -->
+        <div id="mode-container" class="mode-fullscreen"></div>
+        
+        <!-- Список слов (показывается, если режим обучения не активен) -->
+        <div id="words-list-container" class="words-list-container">
+            <div class="flex-between mb-8">
+                <span style="font-weight:600; font-size:16px;">📖 Все слова (${words.length})</span>
+                <button class="btn btn-primary btn-sm" onclick="showAddWordModal('${cat.id}')">➕ Добавить</button>
+            </div>
+            <div id="words-list">
+                ${words.map((w, i) => `
+                    <div class="word-item">
+                        <div class="word-info">
+                            <div class="word-original">
+                                ${w.original}
+                                <button class="speak-btn" onclick="speakWord('${w.original}')">🔊</button>
+                            </div>
+                            <div class="word-translation">${w.translation}</div>
+                            ${w.transcription ? `<div class="word-transcription">${w.transcription}</div>` : ''}
+                        </div>
+                        <div class="word-actions">
+                            <button class="edit-word" onclick="editWord('${cat.id}', ${i})">✏️</button>
+                            <button class="delete-word" onclick="deleteWord('${cat.id}', ${i})">✕</button>
+                        </div>
+                    </div>
+                `).join('')}
             </div>
         </div>
-        <div id="words-list" class="mt-16">
-            ${words.map((w, i) => `
-                <div class="word-item">
-                    <div class="word-info">
-                        <div class="word-original">
-                            ${w.original}
-                            <button class="speak-btn" onclick="speakWord('${w.original}')">🔊</button>
-                        </div>
-                        <div class="word-translation">${w.translation}</div>
-                        ${w.transcription ? `<div class="word-transcription">${w.transcription}</div>` : ''}
-                    </div>
-                    <div class="word-actions">
-                        <button class="edit-word" onclick="editWord('${cat.id}', ${i})">✏️</button>
-                        <button class="delete-word" onclick="deleteWord('${cat.id}', ${i})">✕</button>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
-        <button class="btn btn-primary mt-16" onclick="showAddWordModal('${cat.id}')">➕ Добавить слово</button>
     `;
 }
 
+function showMode(mode) {
+    isModeActive = true;
+    const container = document.getElementById('mode-container');
+    const wordsContainer = document.getElementById('words-list-container');
+    if (wordsContainer) wordsContainer.classList.add('hidden');
+    container.style.display = 'block';
+}
+
+function hideMode() {
+    isModeActive = false;
+    const container = document.getElementById('mode-container');
+    const wordsContainer = document.getElementById('words-list-container');
+    if (wordsContainer) wordsContainer.classList.remove('hidden');
+    container.style.display = 'none';
+    container.innerHTML = '';
+}
+
 // ============================================================
-// 5. КАРТОЧКИ (FLASHCARDS) С ПРОИЗНОШЕНИЕМ
+// 5. КАРТОЧКИ (FLASHCARDS)
 // ============================================================
 
 let flashcardState = { categoryId: null, words: [], currentIndex: 0, showTranslation: false };
@@ -1064,6 +1154,8 @@ let flashcardState = { categoryId: null, words: [], currentIndex: 0, showTransla
 function startFlashcards(categoryId) {
     const cat = getCategory(categoryId);
     if (!cat || !cat.words || cat.words.length === 0) return;
+
+    showMode('flashcards');
 
     flashcardState.categoryId = categoryId;
     flashcardState.words = [...cat.words];
@@ -1081,11 +1173,20 @@ function renderFlashcard() {
     const total = words.length;
 
     if (!word) {
-        container.innerHTML = `<div class="empty-state"><div class="icon">🎉</div><div class="title">Все слова изучены!</div></div>`;
+        container.innerHTML = `
+            <div class="result-card">
+                <div class="score-big">🎉</div>
+                <div class="score-label">Вы просмотрели все карточки!</div>
+                <div class="score-label">Слов: ${flashcardState.words.length}</div>
+                <button class="btn btn-primary mt-16" onclick="hideMode(); openCategory('${flashcardState.categoryId}')">📚 К списку</button>
+                <button class="btn btn-outline mt-8" onclick="startFlashcards('${flashcardState.categoryId}')">🔄 Повторить</button>
+            </div>
+        `;
         return;
     }
 
     container.innerHTML = `
+        <button class="back-to-list" onclick="hideMode(); openCategory('${flashcardState.categoryId}')">← К списку</button>
         <div class="flashcard-container">
             <div class="flashcard" onclick="flipFlashcard()">
                 <div class="word">${flashcardState.showTranslation ? word.translation : word.original}</div>
@@ -1105,7 +1206,6 @@ function renderFlashcard() {
             <button onclick="flipFlashcard()">🔄</button>
             <button onclick="nextFlashcard()" ${idx === total-1 ? 'disabled' : ''}>▶</button>
         </div>
-        <button class="btn btn-outline mt-8" onclick="finishFlashcards()">✅ Завершить</button>
     `;
 }
 
@@ -1130,20 +1230,8 @@ function prevFlashcard() {
     }
 }
 
-function finishFlashcards() {
-    const container = document.getElementById('mode-container');
-    container.innerHTML = `
-        <div class="result-card">
-            <div class="score-big">🎉</div>
-            <div class="score-label">Вы просмотрели все карточки!</div>
-            <div class="score-label">Слов: ${flashcardState.words.length}</div>
-            <button class="btn btn-primary mt-16" onclick="startFlashcards('${flashcardState.categoryId}')">🔄 Повторить</button>
-        </div>
-    `;
-}
-
 // ============================================================
-// 6. ТЕСТ "ВЫБЕРИ ПЕРЕВОД" С ПРОИЗНОШЕНИЕМ
+// 6. ТЕСТ "ВЫБЕРИ ПЕРЕВОД"
 // ============================================================
 
 let quizState = { categoryId: null, words: [], currentIndex: 0, score: 0, mistakes: [], answered: false };
@@ -1154,6 +1242,8 @@ function startQuiz(categoryId) {
         showToast('Нужно минимум 2 слова для теста');
         return;
     }
+
+    showMode('quiz');
 
     quizState.categoryId = categoryId;
     quizState.words = [...cat.words].sort(() => Math.random() - 0.5);
@@ -1186,6 +1276,7 @@ function renderQuiz() {
     }
 
     container.innerHTML = `
+        <button class="back-to-list" onclick="hideMode(); openCategory('${quizState.categoryId}')">← К списку</button>
         <div class="flex-between mb-16">
             <span style="font-weight:600;">${idx+1} / ${total}</span>
             <span>🏆 ${quizState.score}</span>
@@ -1275,13 +1366,13 @@ function showQuizResults() {
     }
 
     container.innerHTML = `
+        <button class="back-to-list" onclick="hideMode(); openCategory('${quizState.categoryId}')">← К списку</button>
         <div class="result-card">
             <div class="score-big">${correct} / ${total}</div>
             <div class="score-label">${Math.round(correct/total*100)}% правильных ответов</div>
             <div class="score-label" style="color:#34C759;">🏆 +${correct * 5} баллов</div>
             ${mistakesHtml}
             <button class="btn btn-primary mt-16" onclick="startQuiz('${quizState.categoryId}')">🔄 Повторить тест</button>
-            <button class="btn btn-outline mt-8" onclick="openCategory('${quizState.categoryId}')">📚 К словам</button>
         </div>
     `;
 }
@@ -1324,7 +1415,7 @@ function renderStats() {
     const avg = totalQuestions > 0 ? Math.round(totalCorrect / totalQuestions * 100) : 0;
 
     let gamesHtml = '';
-    stats.games.slice(-10).reverse().forEach((g, i) => {
+    stats.games.slice(-10).reverse().forEach((g) => {
         const date = new Date(g.date);
         const formattedDate = date.toLocaleDateString('ru-RU');
         gamesHtml += `
@@ -1599,7 +1690,6 @@ function handleEditCategory(categoryId) {
 // ============================================================
 
 function speakWord(text) {
-    // Останавливаем предыдущую речь
     window.speechSynthesis.cancel();
     
     const utterance = new SpeechSynthesisUtterance(text);
@@ -1608,7 +1698,6 @@ function speakWord(text) {
     utterance.pitch = 1.0;
     utterance.volume = 1;
     
-    // Выбираем женский голос, если доступен
     const voices = window.speechSynthesis.getVoices();
     const femaleVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Samantha'));
     if (femaleVoice) {
@@ -1618,7 +1707,6 @@ function speakWord(text) {
     window.speechSynthesis.speak(utterance);
 }
 
-// Заранее загружаем голоса (нужно для Safari)
 if ('speechSynthesis' in window) {
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => {
@@ -1631,6 +1719,20 @@ if ('speechSynthesis' in window) {
 // ============================================================
 
 function switchTab(tabName) {
+    // Если переключаемся с вкладки "Учить" — скрываем режим обучения
+    if (tabName !== 'learn') {
+        if (typeof hideMode === 'function') {
+            const container = document.getElementById('mode-container');
+            if (container) {
+                container.innerHTML = '';
+                container.style.display = 'none';
+            }
+            const wordsContainer = document.getElementById('words-list-container');
+            if (wordsContainer) wordsContainer.classList.remove('hidden');
+        }
+        isModeActive = false;
+    }
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === tabName);
     });
