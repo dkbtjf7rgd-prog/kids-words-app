@@ -145,18 +145,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
 
     <script>
         // ============================================================
-        // 0. SUPABASE CONFIG
-        // ============================================================
-        const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
-        // ============================================================
-
-        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let currentUser = null;
-        let currentProfile = null;
-
-        // ============================================================
-        // 1. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+        // 0. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
         // ============================================================
         function showRegister() {
             document.getElementById('login-form').classList.add('hidden');
@@ -183,7 +172,16 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
             document.body.appendChild(toast);
             setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
         }
+ // ============================================================
+        // 1. SUPABASE CONFIG
+        // ============================================================
+        const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
+        // ============================================================
 
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentUser = null;
+        let currentProfile = null;
         // ============================================================
         // 2. AUTH
         // ============================================================
