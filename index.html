@@ -109,13 +109,15 @@
 
     <script>
         // ============================================================
-        // 0. ВАШИ ДАННЫЕ ДЛЯ ПОДКЛЮЧЕНИЯ К SUPABASE
+        // 0. ВАШИ ДАННЫЕ ДЛЯ ПОДКЛЮЧЕНИЯ К SUPABASE (ОБЪЯВЛЯЕМ ПЕРВЫМИ!)
         // ============================================================
         const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co/rest/v1/';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
         // ============================================================
 
-        // Базовый HTTP-клиент для работы с Supabase (без внешних библиотек)
+        // ============================================================
+        // 0.5. БАЗОВЫЙ HTTP-КЛИЕНТ ДЛЯ SUPABASE (ОБЪЯВЛЯЕМ ВТОРЫМИ!)
+        // ============================================================
         const sb = {
             from: (table) => {
                 return {
@@ -345,11 +347,12 @@
         };
 
         // ============================================================
-        // 1. AUTH FUNCTIONS
+        // 1. AUTH FUNCTIONS (ИСПОЛЬЗУЮТ sb, КОТОРЫЙ УЖЕ ОБЪЯВЛЕН)
         // ============================================================
         let currentUser = null;
 
         async function registerUser(username, name, avatar) {
+            console.log('📝 Регистрация:', username);
             try {
                 const existing = await sb.from('users').select('id').eq('username', username).maybeSingle();
                 if (existing.data) {
@@ -367,12 +370,14 @@
                 showToast('✅ Добро пожаловать, ' + currentUser.name + '!');
                 return true;
             } catch (e) {
+                console.error('Ошибка регистрации:', e);
                 showToast('❌ Ошибка: ' + e.message);
                 return false;
             }
         }
 
         async function loginUser(username) {
+            console.log('🔑 Вход:', username);
             try {
                 const result = await sb.from('users').select('*').eq('username', username).single();
                 if (result.error || !result.data) {
@@ -385,6 +390,7 @@
                 showToast('👋 Привет, ' + currentUser.name + '!');
                 return true;
             } catch (e) {
+                console.error('Ошибка входа:', e);
                 showToast('❌ Ошибка: ' + e.message);
                 return false;
             }
@@ -408,6 +414,7 @@
                 }
                 return false;
             } catch (e) {
+                console.error('Ошибка проверки пользователя:', e);
                 return false;
             }
         }
@@ -428,12 +435,14 @@
         }
 
         function handleLogin() {
+            console.log('✅ Кнопка "Войти" нажата');
             const username = document.getElementById('login-username').value.trim();
             if (!username) { showToast('Введите имя пользователя'); return; }
             loginUser(username);
         }
 
         function handleRegister() {
+            console.log('✅ Кнопка "Создать аккаунт" нажата');
             const username = document.getElementById('reg-username').value.trim();
             const name = document.getElementById('reg-name').value.trim();
             const avatar = document.getElementById('reg-avatar').value;
