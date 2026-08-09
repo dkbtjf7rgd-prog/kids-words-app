@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kids Words</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; }
@@ -15,6 +16,7 @@
         .btn-primary { background: #4A90D9; color: white; }
         .btn-outline { background: transparent; color: #4A90D9; border: 2px solid #4A90D9; }
         .btn-success { background: #34C759; color: white; }
+        .btn-danger { background: #ff6b6b; color: white; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
         .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; }
@@ -38,18 +40,21 @@
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
         <div class="header">
             <h1>📚 Kids Words</h1>
             <p>Учим английские слова легко и весело</p>
         </div>
 
-        <!-- AUTH SCREEN -->
+        <!-- ===== AUTH SCREEN ===== -->
         <div id="auth-screen">
             <div id="login-form">
                 <div class="form-group">
-                    <label>Имя пользователя</label>
-                    <input type="text" id="login-username" placeholder="Введите имя">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="ivan@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="login-password" placeholder="••••••••">
                 </div>
                 <button class="btn btn-primary" onclick="handleLogin()">🚀 Войти</button>
                 <button class="btn btn-outline" onclick="showRegister()">📝 Зарегистрироваться</button>
@@ -57,12 +62,20 @@
 
             <div id="register-form" class="hidden">
                 <div class="form-group">
-                    <label>Имя пользователя (уникальное)</label>
-                    <input type="text" id="reg-username" placeholder="Например: ivan">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" placeholder="ivan@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Имя пользователя</label>
+                    <input type="text" id="reg-username" placeholder="ivan">
                 </div>
                 <div class="form-group">
                     <label>Ваше имя</label>
-                    <input type="text" id="reg-name" placeholder="Например: Иван">
+                    <input type="text" id="reg-name" placeholder="Иван">
+                </div>
+                <div class="form-group">
+                    <label>Пароль (минимум 6 символов)</label>
+                    <input type="password" id="reg-password" placeholder="••••••••">
                 </div>
                 <div class="form-group">
                     <label>Выберите аватар</label>
@@ -81,13 +94,13 @@
             </div>
         </div>
 
-        <!-- APP SCREEN -->
+        <!-- ===== APP SCREEN ===== -->
         <div id="app-screen" class="hidden">
             <div class="flex-between" style="background:white; border-radius:16px; padding:12px 16px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
                 <span id="user-avatar" style="font-size:32px;">🧒</span>
                 <span id="user-name" style="font-weight:600;">Имя</span>
                 <span id="user-points" style="color:#FFB347;">⭐ 0</span>
-                <button onclick="logoutUser()" style="background:none; border:none; color:#ff6b6b; font-size:18px; cursor:pointer;">🚪</button>
+                <button onclick="handleLogout()" style="background:none; border:none; color:#ff6b6b; font-size:18px; cursor:pointer;">🚪</button>
             </div>
             <div id="content">
                 <h3>📚 Ваши категории</h3>
@@ -96,7 +109,7 @@
             </div>
         </div>
 
-        <!-- MODAL -->
+        <!-- ===== MODAL ===== -->
         <div id="modal" class="modal-overlay hidden">
             <div class="modal-content" id="modal-body"></div>
         </div>
@@ -106,361 +119,117 @@
         // ============================================================
         // 0. SUPABASE CONFIG
         // ============================================================
-        const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co/rest/v1/';
+        const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
         // ============================================================
 
-        // ============================================================
-        // 0.5. БАЗОВЫЙ HTTP-КЛИЕНТ ДЛЯ SUPABASE
-        // ============================================================
-        const sb = {
-            from: (table) => {
-                return {
-                    select: (columns = '*') => {
-                        return {
-                            eq: (column, value) => {
-                                return {
-                                    maybeSingle: async () => {
-                                        try {
-                                            const url = `${SUPABASE_URL}${table}?${column}=eq.${encodeURIComponent(value)}`;
-                                            const response = await fetch(url, {
-                                                headers: {
-                                                    'apikey': SUPABASE_KEY,
-                                                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                                                }
-                                            });
-                                            const text = await response.text();
-                                            if (!text || text.trim() === '') return { data: null, error: null };
-                                            const data = JSON.parse(text);
-                                            if (response.ok) {
-                                                return { data: data.length ? data[0] : null, error: null };
-                                            } else {
-                                                return { data: null, error: data };
-                                            }
-                                        } catch (e) {
-                                            return { data: null, error: { message: e.message } };
-                                        }
-                                    },
-                                    single: async () => {
-                                        try {
-                                            const url = `${SUPABASE_URL}${table}?${column}=eq.${encodeURIComponent(value)}`;
-                                            const response = await fetch(url, {
-                                                headers: {
-                                                    'apikey': SUPABASE_KEY,
-                                                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                                                }
-                                            });
-                                            const text = await response.text();
-                                            if (!text || text.trim() === '') return { data: null, error: null };
-                                            const data = JSON.parse(text);
-                                            if (response.ok && data.length) {
-                                                return { data: data[0], error: null };
-                                            } else {
-                                                return { data: null, error: data };
-                                            }
-                                        } catch (e) {
-                                            return { data: null, error: { message: e.message } };
-                                        }
-                                    }
-                                };
-                            },
-                            or: (filters) => {
-                                return {
-                                    maybeSingle: async () => {
-                                        try {
-                                            const url = `${SUPABASE_URL}${table}?or=(${filters})`;
-                                            const response = await fetch(url, {
-                                                headers: {
-                                                    'apikey': SUPABASE_KEY,
-                                                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                                                }
-                                            });
-                                            const text = await response.text();
-                                            if (!text || text.trim() === '') return { data: null, error: null };
-                                            const data = JSON.parse(text);
-                                            if (response.ok) {
-                                                return { data: data.length ? data[0] : null, error: null };
-                                            } else {
-                                                return { data: null, error: data };
-                                            }
-                                        } catch (e) {
-                                            return { data: null, error: { message: e.message } };
-                                        }
-                                    },
-                                    single: async () => {
-                                        try {
-                                            const url = `${SUPABASE_URL}${table}?or=(${filters})`;
-                                            const response = await fetch(url, {
-                                                headers: {
-                                                    'apikey': SUPABASE_KEY,
-                                                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                                                }
-                                            });
-                                            const text = await response.text();
-                                            if (!text || text.trim() === '') return { data: null, error: null };
-                                            const data = JSON.parse(text);
-                                            if (response.ok && data.length) {
-                                                return { data: data[0], error: null };
-                                            } else {
-                                                return { data: null, error: data };
-                                            }
-                                        } catch (e) {
-                                            return { data: null, error: { message: e.message } };
-                                        }
-                                    }
-                                };
-                            },
-                            then: async (resolve) => {
-                                try {
-                                    const response = await fetch(`${SUPABASE_URL}${table}`, {
-                                        headers: {
-                                            'apikey': SUPABASE_KEY,
-                                            'Authorization': `Bearer ${SUPABASE_KEY}`
-                                        }
-                                    });
-                                    const text = await response.text();
-                                    if (!text || text.trim() === '') {
-                                        resolve({ data: [], error: null });
-                                        return;
-                                    }
-                                    const data = JSON.parse(text);
-                                    if (response.ok) {
-                                        resolve({ data, error: null });
-                                    } else {
-                                        resolve({ data: null, error: data });
-                                    }
-                                } catch (e) {
-                                    resolve({ data: null, error: { message: e.message } });
-                                }
-                            }
-                        };
-                    },
-                    insert: (data) => {
-                        return {
-                            select: () => {
-                                return {
-                                    single: async () => {
-                                        try {
-                                            const response = await fetch(`${SUPABASE_URL}${table}`, {
-                                                method: 'POST',
-                                                headers: {
-                                                    'apikey': SUPABASE_KEY,
-                                                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                                    'Content-Type': 'application/json'
-                                                },
-                                                body: JSON.stringify(data)
-                                            });
-                                            const text = await response.text();
-                                            if (!text || text.trim() === '') return { data: null, error: null };
-                                            const result = JSON.parse(text);
-                                            if (response.ok) {
-                                                return { data: result.length ? result[0] : result, error: null };
-                                            } else {
-                                                return { data: null, error: result };
-                                            }
-                                        } catch (e) {
-                                            return { data: null, error: { message: e.message } };
-                                        }
-                                    }
-                                };
-                            },
-                            then: async (resolve) => {
-                                try {
-                                    const response = await fetch(`${SUPABASE_URL}${table}`, {
-                                        method: 'POST',
-                                        headers: {
-                                            'apikey': SUPABASE_KEY,
-                                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify(data)
-                                    });
-                                    const text = await response.text();
-                                    if (!text || text.trim() === '') {
-                                        resolve({ data: [], error: null });
-                                        return;
-                                    }
-                                    const result = JSON.parse(text);
-                                    if (response.ok) {
-                                        resolve({ data: result, error: null });
-                                    } else {
-                                        resolve({ data: null, error: result });
-                                    }
-                                } catch (e) {
-                                    resolve({ data: null, error: { message: e.message } });
-                                }
-                            }
-                        };
-                    },
-                    delete: () => {
-                        return {
-                            eq: (column, value) => {
-                                return {
-                                    then: async (resolve) => {
-                                        try {
-                                            const url = `${SUPABASE_URL}${table}?${column}=eq.${encodeURIComponent(value)}`;
-                                            const response = await fetch(url, {
-                                                method: 'DELETE',
-                                                headers: {
-                                                    'apikey': SUPABASE_KEY,
-                                                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                                                }
-                                            });
-                                            if (response.ok) {
-                                                resolve({ data: { success: true }, error: null });
-                                            } else {
-                                                const text = await response.text();
-                                                const error = text ? JSON.parse(text) : { message: 'Ошибка удаления' };
-                                                resolve({ data: null, error });
-                                            }
-                                        } catch (e) {
-                                            resolve({ data: null, error: { message: e.message } });
-                                        }
-                                    }
-                                };
-                            }
-                        };
-                    },
-                    update: (data) => {
-                        return {
-                            eq: (column, value) => {
-                                return {
-                                    then: async (resolve) => {
-                                        try {
-                                            const url = `${SUPABASE_URL}${table}?${column}=eq.${encodeURIComponent(value)}`;
-                                            const response = await fetch(url, {
-                                                method: 'PATCH',
-                                                headers: {
-                                                    'apikey': SUPABASE_KEY,
-                                                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                                    'Content-Type': 'application/json'
-                                                },
-                                                body: JSON.stringify(data)
-                                            });
-                                            const text = await response.text();
-                                            if (!text || text.trim() === '') {
-                                                resolve({ data: { success: true }, error: null });
-                                                return;
-                                            }
-                                            const result = JSON.parse(text);
-                                            if (response.ok) {
-                                                resolve({ data: result, error: null });
-                                            } else {
-                                                resolve({ data: null, error: result });
-                                            }
-                                        } catch (e) {
-                                            resolve({ data: null, error: { message: e.message } });
-                                        }
-                                    }
-                                };
-                            }
-                        };
-                    }
-                };
-            },
-            rpc: (fn, params) => {
-                return {
-                    then: async (resolve) => {
-                        try {
-                            const response = await fetch(`${SUPABASE_URL}rpc/${fn}`, {
-                                method: 'POST',
-                                headers: {
-                                    'apikey': SUPABASE_KEY,
-                                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(params)
-                            });
-                            const text = await response.text();
-                            if (!text || text.trim() === '') {
-                                resolve({ data: null, error: null });
-                                return;
-                            }
-                            const data = JSON.parse(text);
-                            if (response.ok) {
-                                resolve({ data, error: null });
-                            } else {
-                                resolve({ data: null, error: data });
-                            }
-                        } catch (e) {
-                            resolve({ data: null, error: { message: e.message } });
-                        }
-                    }
-                };
-            }
-        };
+        const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentUser = null;
+        let currentProfile = null;
 
         // ============================================================
         // 1. AUTH FUNCTIONS
         // ============================================================
-        let currentUser = null;
 
-        async function registerUser(username, name, avatar) {
+        async function handleRegister() {
+            const email = document.getElementById('reg-email').value.trim();
+            const username = document.getElementById('reg-username').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const avatar = document.getElementById('reg-avatar').value;
+
+            if (!email || !username || !name || !password) {
+                showToast('❌ Заполните все поля');
+                return;
+            }
+            if (password.length < 6) {
+                showToast('❌ Пароль должен быть минимум 6 символов');
+                return;
+            }
+
             try {
-                const existing = await sb.from('users').select('id').eq('username', username).maybeSingle();
-                if (existing.data) {
-                    showToast('❌ Пользователь с таким именем уже существует');
-                    return false;
+                // Регистрация в Supabase Auth
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            username: username,
+                            name: name,
+                            avatar: avatar
+                        }
+                    }
+                });
+
+                if (error) {
+                    showToast('❌ Ошибка регистрации: ' + error.message);
+                    return;
                 }
-                const result = await sb.from('users').insert([{ username, name, avatar }]).select().single();
-                if (result.error) {
-                    showToast('❌ Ошибка регистрации');
-                    console.error(result.error);
-                    return false;
-                }
-                currentUser = result.data;
-                localStorage.setItem('currentUserId', currentUser.id);
-                renderApp();
-                showToast('✅ Добро пожаловать, ' + currentUser.name + '!');
-                return true;
+
+                showToast('✅ Проверьте email для подтверждения!');
+                showLogin();
             } catch (e) {
                 showToast('❌ Ошибка: ' + e.message);
-                return false;
             }
         }
 
-        async function loginUser(username) {
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!email || !password) {
+                showToast('❌ Введите email и пароль');
+                return;
+            }
+
             try {
-                // Ищем по username, если нет — по name
-                let result = await sb.from('users').select('*').eq('username', username).single();
-                if (result.error || !result.data) {
-                    result = await sb.from('users').select('*').eq('name', username).single();
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) {
+                    showToast('❌ Ошибка входа: ' + error.message);
+                    return;
                 }
-                if (result.error || !result.data) {
-                    showToast('❌ Пользователь не найден');
-                    return false;
-                }
-                currentUser = result.data;
-                localStorage.setItem('currentUserId', currentUser.id);
+
+                currentUser = data.user;
+                await loadProfile();
                 renderApp();
-                showToast('👋 Привет, ' + currentUser.name + '!');
-                return true;
+                showToast('👋 Привет, ' + (currentProfile?.name || '') + '!');
             } catch (e) {
                 showToast('❌ Ошибка: ' + e.message);
-                return false;
             }
         }
 
-        function logoutUser() {
+        async function handleLogout() {
+            await supabase.auth.signOut();
             currentUser = null;
-            localStorage.removeItem('currentUserId');
+            currentProfile = null;
             renderApp();
             showToast('👋 До свидания!');
         }
 
-        async function checkSavedUser() {
-            const userId = localStorage.getItem('currentUserId');
-            if (!userId) return false;
-            try {
-                const result = await sb.from('users').select('*').eq('id', userId).single();
-                if (result.data) {
-                    currentUser = result.data;
-                    return true;
-                }
-                return false;
-            } catch (e) {
-                return false;
+        async function loadProfile() {
+            if (!currentUser) return;
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+            if (!error && data) {
+                currentProfile = data;
             }
+        }
+
+        async function checkSession() {
+            const { data } = await supabase.auth.getSession();
+            if (data?.session) {
+                currentUser = data.session.user;
+                await loadProfile();
+                return true;
+            }
+            return false;
         }
 
         function showRegister() {
@@ -478,59 +247,50 @@
             document.getElementById('reg-avatar').value = el.textContent;
         }
 
-        function handleLogin() {
-            const username = document.getElementById('login-username').value.trim();
-            if (!username) { showToast('Введите имя пользователя'); return; }
-            loginUser(username);
-        }
-
-        function handleRegister() {
-            const username = document.getElementById('reg-username').value.trim();
-            const name = document.getElementById('reg-name').value.trim();
-            const avatar = document.getElementById('reg-avatar').value;
-            if (!username || !name) { showToast('Заполните все поля'); return; }
-            registerUser(username, name, avatar);
-        }
-
         // ============================================================
         // 2. RENDER
         // ============================================================
         function renderApp() {
             const authScreen = document.getElementById('auth-screen');
             const appScreen = document.getElementById('app-screen');
-            if (!currentUser) {
+
+            if (!currentUser || !currentProfile) {
                 authScreen.classList.remove('hidden');
                 appScreen.classList.add('hidden');
                 return;
             }
+
             authScreen.classList.add('hidden');
             appScreen.classList.remove('hidden');
-            document.getElementById('user-avatar').textContent = currentUser.avatar || '🧒';
-            document.getElementById('user-name').textContent = currentUser.name || 'Имя';
-            document.getElementById('user-points').textContent = '⭐ ' + (currentUser.total_points || 0);
+
+            document.getElementById('user-avatar').textContent = currentProfile.avatar || '🧒';
+            document.getElementById('user-name').textContent = currentProfile.name || 'Имя';
+            document.getElementById('user-points').textContent = '⭐ ' + (currentProfile.total_points || 0);
             loadCategories();
         }
 
         // ============================================================
-        // 3. CATEGORIES (показываем свои + публичные)
+        // 3. CATEGORIES
         // ============================================================
         async function loadCategories() {
             if (!currentUser) return;
             try {
-                const result = await sb.from('categories')
+                const { data, error } = await supabase
+                    .from('categories')
                     .select('*, words(*)')
-                    .or(`user_id.eq.${currentUser.id},is_public.eq.true`)
-                    .then();
-                if (result.error) {
-                    console.error('Ошибка загрузки категорий:', result.error);
+                    .or(`user_id.eq.${currentUser.id},is_public.eq.true`);
+
+                if (error) {
+                    console.error('Ошибка загрузки категорий:', error);
                     return;
                 }
-                const data = result.data || [];
+
                 const container = document.getElementById('categories-list');
-                if (!data.length) {
+                if (!data || data.length === 0) {
                     container.innerHTML = '<div class="empty-state"><div class="icon">📂</div><div class="text-center">Нет категорий. Создайте первую!</div></div>';
                     return;
                 }
+
                 container.innerHTML = data.map(cat => `
                     <div class="card">
                         <div class="flex">
@@ -553,21 +313,24 @@
         async function createCategory(name, color) {
             if (!currentUser) return;
             try {
-                const result = await sb.from('categories').insert([{
-                    user_id: currentUser.id,
-                    name: name,
-                    color: color || '#4A90D9',
-                    is_public: false
-                }]).select().single();
-                if (result.error) {
-                    showToast('❌ Ошибка создания: ' + JSON.stringify(result.error));
-                    console.error(result.error);
+                const { data, error } = await supabase
+                    .from('categories')
+                    .insert([{
+                        user_id: currentUser.id,
+                        name: name,
+                        color: color || '#4A90D9',
+                        is_public: false
+                    }])
+                    .select()
+                    .single();
+
+                if (error) {
+                    showToast('❌ Ошибка: ' + error.message);
                     return;
                 }
-                showToast('✅ Категория создана!');
+                showToast('✅ Категория создана');
                 loadCategories();
-                // Показываем кнопки для добавления слов
-                setTimeout(() => showAddWordModal(result.data.id), 300);
+                setTimeout(() => showAddWordModal(data.id), 300);
             } catch (e) {
                 showToast('❌ Ошибка: ' + e.message);
             }
@@ -576,8 +339,12 @@
         async function deleteCategory(id) {
             if (!confirm('Удалить категорию?')) return;
             try {
-                const result = await sb.from('categories').delete().eq('id', id);
-                if (result.error) {
+                const { error } = await supabase
+                    .from('categories')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) {
                     showToast('❌ Ошибка удаления');
                     return;
                 }
@@ -594,18 +361,20 @@
         async function addWord(categoryId, original, translation, transcription) {
             if (!currentUser) return;
             try {
-                const result = await sb.from('words').insert([{
-                    category_id: categoryId,
-                    original: original,
-                    translation: translation,
-                    transcription: transcription || ''
-                }]).select().single();
-                if (result.error) {
-                    showToast('❌ Ошибка добавления слова');
-                    console.error(result.error);
+                const { error } = await supabase
+                    .from('words')
+                    .insert([{
+                        category_id: categoryId,
+                        original: original,
+                        translation: translation,
+                        transcription: transcription || ''
+                    }]);
+
+                if (error) {
+                    showToast('❌ Ошибка: ' + error.message);
                     return;
                 }
-                showToast('✅ Слово добавлено!');
+                showToast('✅ Слово добавлено');
                 loadCategories();
             } catch (e) {
                 showToast('❌ Ошибка: ' + e.message);
@@ -726,8 +495,10 @@
         // ============================================================
         // 8. INIT
         // ============================================================
-        checkSavedUser().then(() => renderApp());
-        console.log('✅ Kids Words App готов!');
+        checkSession().then(() => {
+            renderApp();
+            console.log('✅ Kids Words App готов!');
+        });
     </script>
 </body>
 </html>
