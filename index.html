@@ -2,873 +2,261 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#4A90D9">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kids Words</title>
-    <script src="https://cdn.jsdelivr.net/npm/@mySupabaseClient/mySupabaseClient-js@2/dist/umd/mySupabaseClient.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; color: #333; min-height: 100vh; min-height: 100dvh; overflow-x: hidden; }
-        .app-container { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 80px; }
-        .header { text-align: center; padding: 20px 0 12px; }
-        .header h1 { font-size: 28px; font-weight: 700; color: #1a1a2e; }
-        .header p { font-size: 14px; color: #888; margin-top: 4px; }
-        .user-info { display: flex; align-items: center; justify-content: space-between; background: #fff; border-radius: 16px; padding: 12px 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        .user-info .avatar { font-size: 32px; }
-        .user-info .name { font-weight: 600; font-size: 16px; }
-        .user-info .points { font-size: 14px; color: #FFB347; }
-        .user-info .logout-btn { background: none; border: none; color: #ff6b6b; font-size: 18px; cursor: pointer; }
-        .tabs { display: flex; gap: 8px; background: #fff; border-radius: 16px; padding: 6px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        .tab-btn { flex: 1; padding: 12px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; background: transparent; color: #888; cursor: pointer; transition: all 0.3s; }
-        .tab-btn.active { background: #4A90D9; color: #fff; box-shadow: 0 2px 8px rgba(74, 144, 217, 0.3); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .category-card { background: #fff; border-radius: 16px; padding: 16px 18px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; transition: all 0.2s; }
-        .category-card:active { transform: scale(0.97); }
-        .category-card .color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; margin-right: 12px; }
-        .category-card .name { flex: 1; font-weight: 600; font-size: 16px; }
-        .category-card .count { font-size: 13px; color: #999; background: #f0f0f0; padding: 2px 10px; border-radius: 20px; }
-        .category-card .delete-btn { background: none; border: none; color: #ff6b6b; font-size: 18px; cursor: pointer; padding: 4px 8px; margin-left: 8px; }
-        .category-card .edit-btn { background: none; border: none; color: #4A90D9; font-size: 16px; cursor: pointer; padding: 4px 8px; }
-        .category-card .select-checkbox { width: 20px; height: 20px; margin-right: 12px; accent-color: #4A90D9; cursor: pointer; }
-        
-        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; }
-        .btn-primary { background: #4A90D9; color: #fff; }
-        .btn-primary:active { transform: scale(0.97); }
-        .btn-success { background: #34C759; color: #fff; }
-        .btn-danger { background: #ff6b6b; color: #fff; }
-        .btn-outline { background: transparent; color: #4A90D9; border: 2px solid #4A90D9; }
-        .btn-sm { padding: 8px 14px; font-size: 14px; width: auto; }
-        
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; color: #555; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px 14px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; font-family: inherit; transition: border 0.2s; background: #fff; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #4A90D9; }
-        .form-group textarea { min-height: 80px; resize: vertical; }
-        
-        .color-picker { display: flex; gap: 12px; flex-wrap: wrap; padding: 8px 0; }
-        .color-option { width: 40px; height: 40px; border-radius: 50%; border: 3px solid transparent; cursor: pointer; transition: all 0.2s; }
-        .color-option.active { border-color: #333; transform: scale(1.1); }
-        
-        .word-item { background: #fff; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-        .word-item .word-info { flex: 1; }
-        .word-item .word-original { font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .word-item .word-original .speak-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: #4A90D9; }
-        .word-item .word-translation { font-size: 14px; color: #666; }
-        .word-item .word-transcription { font-size: 12px; color: #999; }
-        .word-item .word-actions { display: flex; gap: 6px; }
-        .word-item .word-actions button { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px 6px; }
-        .word-item .word-actions .edit-word { color: #4A90D9; }
-        .word-item .word-actions .delete-word { color: #ff6b6b; }
-        
-        .flashcard { background: #fff; border-radius: 24px; padding: 40px 20px; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,0.12); cursor: pointer; transition: transform 0.3s; user-select: none; }
-        .flashcard:active { transform: scale(0.97); }
-        .flashcard .word { font-size: 40px; font-weight: 700; margin-bottom: 8px; }
-        .flashcard .transcription { font-size: 18px; color: #888; }
-        .flashcard .translation { font-size: 32px; font-weight: 600; color: #4A90D9; }
-        .flashcard .hint { font-size: 14px; color: #aaa; margin-top: 16px; }
-        .flashcard-controls { display: flex; justify-content: center; gap: 30px; margin: 16px 0; }
-        .flashcard-controls button { background: none; border: none; font-size: 36px; cursor: pointer; padding: 8px 16px; color: #4A90D9; transition: transform 0.2s; }
-        .flashcard-controls button:active { transform: scale(0.9); }
-        .flashcard-controls button:disabled { opacity: 0.3; cursor: not-allowed; }
-        .flashcard-progress { text-align: center; font-size: 14px; color: #999; }
-        .flashcard-speak-btn { display: block; margin: 12px auto 0; padding: 10px 24px; background: #4A90D9; color: #fff; border: none; border-radius: 30px; font-size: 16px; cursor: pointer; transition: all 0.2s; }
-        .flashcard-speak-btn:active { transform: scale(0.95); }
-        
-        .quiz-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
-        .quiz-option { padding: 16px 20px; border: 2px solid #e0e0e0; border-radius: 14px; background: #fff; font-size: 17px; font-weight: 500; cursor: pointer; transition: all 0.2s; text-align: left; }
-        .quiz-option:active { transform: scale(0.97); }
-        .quiz-option.correct { border-color: #34C759; background: #e8f9ed; }
-        .quiz-option.wrong { border-color: #ff6b6b; background: #fde8e8; }
-        .quiz-option:disabled { cursor: not-allowed; }
-        .quiz-score { text-align: center; font-size: 18px; font-weight: 600; margin: 12px 0; }
-        
-        .result-card { background: #fff; border-radius: 16px; padding: 24px; text-align: center; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-        .result-card .score-big { font-size: 48px; font-weight: 700; color: #4A90D9; }
-        .result-card .score-label { font-size: 14px; color: #888; margin-top: 4px; }
-        .result-card .mistakes-list { margin-top: 16px; text-align: left; }
-        .result-card .mistake-item { padding: 8px 12px; background: #fde8e8; border-radius: 8px; margin-bottom: 6px; font-size: 14px; }
-        .result-card .mistake-item .correct-answer { color: #34C759; font-weight: 600; }
-        
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0; }
-        .stats-item { background: #fff; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
-        .stats-item .value { font-size: 24px; font-weight: 700; color: #1a1a2e; }
-        .stats-item .label { font-size: 11px; color: #999; margin-top: 4px; }
-        
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 20px; animation: fadeIn 0.25s ease; }
-        .modal-content { background: #fff; border-radius: 24px; padding: 24px; max-width: 420px; width: 100%; max-height: 90vh; overflow-y: auto; animation: slideUp 0.3s ease; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-content .modal-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; text-align: center; }
-        .modal-content .modal-close { float: right; background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
-        
-        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
-        .category-title { font-weight: 600; font-size: 18px; }
-        .category-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .back-to-list { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: #4A90D9; font-size: 16px; font-weight: 600; cursor: pointer; padding: 8px 0; margin-bottom: 12px; }
-        
-        .auth-screen { max-width: 400px; margin: 0 auto; padding: 20px; padding-top: 60px; }
-        .auth-screen h1 { text-align: center; font-size: 36px; }
-        .auth-screen .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
-        .auth-screen .avatar-selector { display: flex; gap: 12px; font-size: 28px; padding: 8px 0; flex-wrap: wrap; justify-content: center; }
-        .auth-screen .avatar-selector span { cursor: pointer; padding: 8px; border-radius: 50%; border: 3px solid transparent; transition: all 0.2s; }
-        .auth-screen .avatar-selector span.active { border-color: #4A90D9; background: rgba(74,144,217,0.1); }
-        
-        .hidden { display: none !important; }
-        .mt-8 { margin-top: 8px; }
-        .mt-16 { margin-top: 16px; }
-        .mb-8 { margin-bottom: 8px; }
-        .mb-16 { margin-bottom: 16px; }
-        .flex { display: flex; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .gap-8 { gap: 8px; }
-        .gap-12 { gap: 12px; }
-        .text-center { text-align: center; }
-        .text-muted { color: #999; font-size: 14px; }
-        
-        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
-        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
-        .empty-state .title { font-weight: 600; color: #666; }
-        
-        .words-list-container { margin-top: 16px; }
-        .words-list-container.hidden { display: none; }
-        .mode-fullscreen { padding: 0; }
-        
-        .category-select-item { background: #fff; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); cursor: pointer; }
-        .category-select-item:active { transform: scale(0.97); }
-        .category-select-item .color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-        .category-select-item .name { flex: 1; font-weight: 500; }
-        .category-select-item .count { font-size: 12px; color: #999; }
-        
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 12px 24px; border-radius: 12px; font-size: 14px; z-index: 2000; max-width: 90%; text-align: center; animation: fadeIn 0.3s ease; }
-        
-        @media (max-width: 400px) { .flashcard .word { font-size: 32px; } .flashcard .translation { font-size: 26px; } .stats-grid { grid-template-columns: 1fr 1fr; } }
-        @media (min-width: 481px) { .app-container { padding: 24px; } }
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
-
-<!-- ===== AUTH SCREEN ===== -->
-<div id="auth-screen" class="auth-screen" style="display:none;">
-    <h1>📚 Kids Words</h1>
-    <p class="subtitle">Учим английские слова легко и весело</p>
-    
-    <div id="login-form">
-        <div class="form-group">
-            <label>Имя пользователя</label>
-            <input type="text" id="login-username" placeholder="Введите имя" autocomplete="off">
-        </div>
-        <button class="btn btn-primary" onclick="handleLogin()">🚀 Войти</button>
-        <button class="btn btn-outline mt-8" onclick="showRegister()">📝 Зарегистрироваться</button>
-    </div>
-
-    <div id="register-form" style="display:none;">
-        <div class="form-group">
-            <label>Имя пользователя (уникальное)</label>
-            <input type="text" id="reg-username" placeholder="Например: ivan" autocomplete="off">
-        </div>
-        <div class="form-group">
-            <label>Ваше имя</label>
-            <input type="text" id="reg-name" placeholder="Например: Иван">
-        </div>
-        <div class="form-group">
-            <label>Выберите аватар</label>
-            <div class="avatar-selector" id="avatar-selector">
-                <span class="active" onclick="selectAvatar(this)">🧒</span>
-                <span onclick="selectAvatar(this)">👦</span>
-                <span onclick="selectAvatar(this)">👧</span>
-                <span onclick="selectAvatar(this)">👶</span>
-                <span onclick="selectAvatar(this)">🦊</span>
-                <span onclick="selectAvatar(this)">🐱</span>
-                <span onclick="selectAvatar(this)">🐼</span>
-                <span onclick="selectAvatar(this)">🦄</span>
-            </div>
-            <input type="hidden" id="reg-avatar" value="🧒">
-        </div>
-        <button class="btn btn-primary" onclick="handleRegister()">✅ Создать аккаунт</button>
-        <button class="btn btn-outline mt-8" onclick="showLogin()">← Уже есть аккаунт?</button>
-    </div>
-</div>
-
-<!-- ===== APP ===== -->
-<div id="app" class="app-container" style="display:none;">
-    <!-- HEADER -->
-    <div class="header">
-        <h1>📚 Kids Words</h1>
-        <p>Учим английские слова легко и весело</p>
-    </div>
-
-    <!-- USER INFO -->
-    <div class="user-info" id="user-info">
-        <span class="avatar" id="user-avatar">🧒</span>
-        <span class="name" id="user-name">Имя</span>
-        <span class="points">⭐ <span id="user-points">0</span></span>
-        <button class="logout-btn" onclick="logoutUser()">🚪</button>
-    </div>
-
-    <!-- TABS -->
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="categories">📂 Категории</button>
-        <button class="tab-btn" data-tab="learn">🧠 Учить</button>
-        <button class="tab-btn" data-tab="stats">📊 Статистика</button>
-    </div>
-
-    <!-- TAB: CATEGORIES -->
-    <div id="tab-categories" class="tab-content active">
-        <div class="flex-between mb-16">
-            <span style="font-weight:600; font-size:18px;">Ваши категории</span>
-            <button class="btn btn-primary btn-sm" onclick="showCreateCategoryModal()">➕ Создать</button>
-        </div>
-        <div id="categories-list"></div>
-    </div>
-
-    <!-- TAB: LEARN -->
-    <div id="tab-learn" class="tab-content">
-        <div id="learn-content">
-            <div class="empty-state">
-                <div class="icon">📖</div>
-                <div class="title">Выберите категорию для изучения</div>
-                <p class="text-muted mt-8">Перейдите во вкладку «Категории» и нажмите на нужную</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- TAB: STATS -->
-    <div id="tab-stats" class="tab-content">
-        <div id="stats-content">
-            <div class="empty-state">
-                <div class="icon">📊</div>
-                <div class="title">Статистика загружается...</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ===== MODAL ===== -->
-<div id="modal" class="modal-overlay hidden" onclick="if(event.target===this) closeModal()">
-    <div class="modal-content" id="modal-body"></div>
-</div>
-
-<script>
-// ============================================================
-// 0.  CONFIG
-// ============================================================
-const _URL = 'https://lcphvftkjgsclcqpkegd..co/rest/v1/';
-const mySupabaseClient_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk'
-    // ============================================================
-
-const mySupabaseClient = mySupabaseClientJs.createClient(mySupabaseClient_URL, mySupabaseClient_KEY);
-
-let currentUser = null;
-let selectedCategories = [];
-let currentCategoryId = null;
-let isModeActive = false;
-
-// ============================================================
-// 1. AUTH
-// ============================================================
-
-async function registerUser(username, name, avatar) {
-    const { data: existing } = await mySupabaseClient
-        .from('users')
-        .select('id')
-        .eq('username', username)
-        .single();
-
-    if (existing) {
-        showToast('❌ Пользователь с таким именем уже существует');
-        return false;
-    }
-
-    const { data, error } = await mySupabaseClient
-        .from('users')
-        .insert([{ username, name, avatar }])
-        .select()
-        .single();
-
-    if (error) {
-        showToast('❌ Ошибка регистрации: ' + error.message);
-        return false;
-    }
-
-    currentUser = data;
-    localStorage.setItem('currentUserId', data.id);
-    renderApp();
-    showToast('✅ Добро пожаловать, ' + data.name + '!');
-    return true;
-}
-
-async function loginUser(username) {
-    const { data, error } = await mySupabaseClient
-        .from('users')
-        .select('*')
-        .eq('username', username)
-        .single();
-
-    if (error || !data) {
-        showToast('❌ Пользователь не найден');
-        return false;
-    }
-
-    currentUser = data;
-    localStorage.setItem('currentUserId', data.id);
-    renderApp();
-    showToast('👋 Привет, ' + data.name + '!');
-    return true;
-}
-
-function logoutUser() {
-    currentUser = null;
-    localStorage.removeItem('currentUserId');
-    renderApp();
-    showToast('👋 До свидания!');
-}
-
-async function checkSavedUser() {
-    const userId = localStorage.getItem('currentUserId');
-    if (!userId) return false;
-
-    const { data, error } = await mySupabaseClient
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-    if (data && !error) {
-        currentUser = data;
-        return true;
-    }
-    return false;
-}
-
-function showRegister() {
-    document.getElementById('login-form').style.display = 'none';
-    document.getElementById('register-form').style.display = 'block';
-}
-
-function showLogin() {
-    document.getElementById('login-form').style.display = 'block';
-    document.getElementById('register-form').style.display = 'none';
-}
-
-function selectAvatar(el) {
-    document.querySelectorAll('#avatar-selector span').forEach(s => s.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('reg-avatar').value = el.textContent;
-}
-
-async function handleLogin() {
-    const username = document.getElementById('login-username').value.trim();
-    if (!username) { showToast('Введите имя пользователя'); return; }
-    await loginUser(username);
-}
-
-async function handleRegister() {
-    const username = document.getElementById('reg-username').value.trim();
-    const name = document.getElementById('reg-name').value.trim();
-    const avatar = document.getElementById('reg-avatar').value;
-
-    if (!username || !name) { showToast('Заполните все поля'); return; }
-    await registerUser(username, name, avatar);
-}
-
-// ============================================================
-// 2. DATA FUNCTIONS
-// ============================================================
-
-async function loadCategoriesFrommySupabaseClient() {
-    if (!currentUser) return [];
-
-    const { data, error } = await mySupabaseClient
-        .from('categories')
-        .select('*, words(*)')
-        .or(`user_id.eq.${currentUser.id},is_public.eq.true`);
-
-    if (error) {
-        console.error('Ошибка загрузки категорий:', error);
-        return [];
-    }
-
-    return data || [];
-}
-
-function renderApp() {
-    const authScreen = document.getElementById('auth-screen');
-    const appScreen = document.getElementById('app');
-
-    if (!currentUser) {
-        authScreen.style.display = 'block';
-        appScreen.style.display = 'none';
-        return;
-    }
-
-    authScreen.style.display = 'none';
-    appScreen.style.display = 'block';
-
-    // Обновляем информацию о пользователе
-    document.getElementById('user-avatar').textContent = currentUser.avatar || '🧒';
-    document.getElementById('user-name').textContent = currentUser.name || 'Имя';
-    document.getElementById('user-points').textContent = currentUser.total_points || 0;
-
-    // Загружаем категории
-    loadCategoriesFrommySupabaseClient().then(categories => {
-        renderCategories(categories);
-    });
-}
-
-function renderCategories(categories) {
-    const container = document.getElementById('categories-list');
-    if (!categories || categories.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="icon">📂</div>
-                <div class="title">Нет категорий</div>
-                <p class="text-muted mt-8">Создайте свою первую категорию</p>
-            </div>
-        `;
-        return;
-    }
-
-    let html = '';
-    categories.forEach(cat => {
-        const wordCount = cat.words ? cat.words.length : 0;
-        html += `
-            <div class="category-card" onclick="openCategory('${cat.id}')">
-                <span class="color-dot" style="background:${cat.color || '#4A90D9'}"></span>
-                <span class="name">${cat.name}</span>
-                <span class="count">${wordCount}</span>
-                <button class="edit-btn" onclick="event.stopPropagation(); showEditCategoryModal('${cat.id}')">✏️</button>
-                <button class="delete-btn" onclick="event.stopPropagation(); deleteCategory('${cat.id}')">✕</button>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-// ============================================================
-// 3. КАТЕГОРИИ (CRUD)
-// ============================================================
-
-async function createCategory(name, color) {
-    if (!currentUser) return;
-
-    const { data, error } = await mySupabaseClient
-        .from('categories')
-        .insert([{
-            user_id: currentUser.id,
-            name: name,
-            color: color || '#4A90D9',
-            is_public: false
-        }])
-        .select()
-        .single();
-
-    if (error) {
-        showToast('❌ Ошибка создания: ' + error.message);
-        return;
-    }
-
-    showToast('✅ Категория создана');
-    renderApp();
-}
-
-async function deleteCategory(id) {
-    if (!confirm('Удалить категорию и все слова в ней?')) return;
-
-    const { error } = await mySupabaseClient
-        .from('categories')
-        .delete()
-        .eq('id', id);
-
-    if (error) {
-        showToast('❌ Ошибка удаления: ' + error.message);
-        return;
-    }
-
-    showToast('🗑️ Категория удалена');
-    renderApp();
-}
-
-async function editCategory(id, newName, newColor) {
-    const { error } = await mySupabaseClient
-        .from('categories')
-        .update({ name: newName, color: newColor })
-        .eq('id', id);
-
-    if (error) {
-        showToast('❌ Ошибка обновления: ' + error.message);
-        return;
-    }
-
-    showToast('✏️ Категория обновлена');
-    renderApp();
-}
-
-// ============================================================
-// 4. МОДАЛЬНЫЕ ОКНА
-// ============================================================
-
-function showModal(html) {
-    document.getElementById('modal-body').innerHTML = html;
-    document.getElementById('modal').classList.remove('hidden');
-}
-
-function closeModal() {
-    document.getElementById('modal').classList.add('hidden');
-}
-
-function showCreateCategoryModal() {
-    showModal(`
-        <button class="modal-close" onclick="closeModal()">✕</button>
-        <div class="modal-title">📂 Новая категория</div>
-        <div class="form-group">
-            <label>Название категории</label>
-            <input type="text" id="new-cat-name" placeholder="Например: Животные">
-        </div>
-        <div class="form-group">
-            <label>Цвет</label>
-            <div class="color-picker">
-                ${['#B8E1FC','#C8E6D9','#E0D4F5','#FFE0B5','#FADADD','#B8F0E0','#F0D4F0','#FFF0B5','#D4E0F5'].map(c => `
-                    <div class="color-option ${c === '#B8E1FC' ? 'active' : ''}" 
-                         style="background:${c}" onclick="selectColor(this, '${c}')"></div>
-                `).join('')}
-            </div>
-        </div>
-        <button class="btn btn-primary" onclick="handleCreateCategory()">Создать</button>
-    `);
-}
-
-function selectColor(el, color) {
-    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    el.dataset.selectedColor = color;
-}
-
-async function handleCreateCategory() {
-    const name = document.getElementById('new-cat-name').value.trim();
-    const selected = document.querySelector('.color-option.active');
-    const color = selected ? selected.style.background : '#4A90D9';
-    if (!name) { showToast('Введите название'); return; }
-    await createCategory(name, color);
-    closeModal();
-}
-
-function showEditCategoryModal(categoryId) {
-    showModal(`
-        <button class="modal-close" onclick="closeModal()">✕</button>
-        <div class="modal-title">✏️ Редактировать категорию</div>
-        <div class="form-group">
-            <label>Название</label>
-            <input type="text" id="edit-cat-name" placeholder="Название">
-        </div>
-        <div class="form-group">
-            <label>Цвет</label>
-            <div class="color-picker">
-                ${['#B8E1FC','#C8E6D9','#E0D4F5','#FFE0B5','#FADADD','#B8F0E0','#F0D4F0','#FFF0B5','#D4E0F5'].map(c => `
-                    <div class="color-option" style="background:${c}" onclick="selectColor(this, '${c}')"></div>
-                `).join('')}
-            </div>
-        </div>
-        <button class="btn btn-primary" onclick="handleEditCategory('${categoryId}')">Сохранить</button>
-    `);
-}
-
-async function handleEditCategory(categoryId) {
-    const name = document.getElementById('edit-cat-name').value.trim();
-    const selected = document.querySelector('.color-option.active');
-    const color = selected ? selected.style.background : '#4A90D9';
-    if (!name) { showToast('Введите название'); return; }
-    await editCategory(categoryId, name, color);
-    closeModal();
-}
-
-// ============================================================
-// 5. ОТКРЫТИЕ КАТЕГОРИИ
-// ============================================================
-
-function openCategory(categoryId) {
-    currentCategoryId = categoryId;
-    switchTab('learn');
-    
-    const container = document.getElementById('learn-content');
-    container.innerHTML = `
-        <div class="category-header">
-            <span class="category-title">📖 Загрузка...</span>
-            <div class="category-actions">
-                <button class="btn btn-primary btn-sm" onclick="startFlashcards('${categoryId}')">🃏 Карточки</button>
-                <button class="btn btn-success btn-sm" onclick="startQuiz('${categoryId}')">📝 Тест</button>
-            </div>
-        </div>
-        <div id="mode-container" class="mode-fullscreen"></div>
-        <div id="words-list-container" class="words-list-container">
-            <div class="empty-state">
-                <div class="icon">⏳</div>
-                <div class="title">Загрузка слов...</div>
-            </div>
-        </div>
-    `;
-
-    // Загружаем слова
-    loadCategoryWords(categoryId);
-}
-
-async function loadCategoryWords(categoryId) {
-    const { data, error } = await mySupabaseClient
-        .from('words')
-        .select('*')
-        .eq('category_id', categoryId);
-
-    if (error) {
-        console.error('Ошибка загрузки слов:', error);
-        return;
-    }
-
-    const words = data || [];
-    const cat = await mySupabaseClient
-        .from('categories')
-        .select('name')
-        .eq('id', categoryId)
-        .single();
-
-    const categoryName = cat.data?.name || 'Категория';
-
-    const container = document.getElementById('learn-content');
-    const title = container.querySelector('.category-title');
-    if (title) title.textContent = `📖 ${categoryName}`;
-
-    const wordsContainer = document.getElementById('words-list-container');
-    if (words.length === 0) {
-        wordsContainer.innerHTML = `
-            <div class="empty-state">
-                <div class="icon">📝</div>
-                <div class="title">В категории пока нет слов</div>
-                <p class="text-muted mt-8">Добавьте первое слово</p>
-            </div>
-        `;
-        return;
-    }
-
-    wordsContainer.innerHTML = `
-        <div class="flex-between mb-8">
-            <span style="font-weight:600; font-size:16px;">📖 Все слова (${words.length})</span>
-            <button class="btn btn-primary btn-sm" onclick="showAddWordModal('${categoryId}')">➕ Добавить</button>
-        </div>
-        <div id="words-list">
-            ${words.map((w, i) => `
-                <div class="word-item">
-                    <div class="word-info">
-                        <div class="word-original">
-                            ${w.original}
-                            <button class="speak-btn" onclick="speakWord('${w.original}')">🔊</button>
-                        </div>
-                        <div class="word-translation">${w.translation}</div>
-                        ${w.transcription ? `<div class="word-transcription">${w.transcription}</div>` : ''}
-                    </div>
-                    <div class="word-actions">
-                        <button class="edit-word" onclick="editWord('${categoryId}', '${w.id}')">✏️</button>
-                        <button class="delete-word" onclick="deleteWord('${categoryId}', '${w.id}')">✕</button>
-                    </div>
+    <div id="app" style="max-width: 480px; margin: 0 auto; padding: 20px; font-family: -apple-system, sans-serif;">
+        <h1 style="text-align: center;">📚 Kids Words</h1>
+        <p style="text-align: center; color: #888;">Учим английские слова легко и весело</p>
+        
+        <div id="auth-screen">
+            <div id="login-form">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 6px;">Имя пользователя</label>
+                    <input type="text" id="login-username" placeholder="Введите имя" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px;">
                 </div>
-            `).join('')}
-        </div>
-    `;
-}
-
-// ============================================================
-// 6. КАРТОЧКИ
-// ============================================================
-
-async function startFlashcards(categoryId) {
-    const { data: words } = await mySupabaseClient
-        .from('words')
-        .select('*')
-        .eq('category_id', categoryId);
-
-    if (!words || words.length === 0) {
-        showToast('❌ Нет слов для изучения');
-        return;
-    }
-
-    // Здесь будет логика карточек
-    showToast('🃏 Карточки — в разработке');
-}
-
-// ============================================================
-// 7. ТЕСТ
-// ============================================================
-
-async function startQuiz(categoryId) {
-    const { data: words } = await mySupabaseClient
-        .from('words')
-        .select('*')
-        .eq('category_id', categoryId);
-
-    if (!words || words.length < 2) {
-        showToast('❌ Нужно минимум 2 слова для теста');
-        return;
-    }
-
-    // Здесь будет логика теста
-    showToast('📝 Тест — в разработке');
-}
-
-// ============================================================
-// 8. СПИСОК СЛОВ
-// ============================================================
-
-function showAddWordModal(categoryId) {
-    showModal(`
-        <button class="modal-close" onclick="closeModal()">✕</button>
-        <div class="modal-title">➕ Добавить слово</div>
-        <div class="form-group">
-            <label>Слово (на английском)</label>
-            <input type="text" id="new-word-original" placeholder="Например: cat">
-        </div>
-        <div class="form-group">
-            <label>Перевод</label>
-            <input type="text" id="new-word-translation" placeholder="Например: кошка">
-        </div>
-        <div class="form-group">
-            <label>Транскрипция (необязательно)</label>
-            <input type="text" id="new-word-transcription" placeholder="Например: [kæt]">
-        </div>
-        <button class="btn btn-primary" onclick="handleAddWord('${categoryId}')">Добавить</button>
-    `);
-}
-
-async function handleAddWord(categoryId) {
-    const original = document.getElementById('new-word-original').value.trim();
-    const translation = document.getElementById('new-word-translation').value.trim();
-    const transcription = document.getElementById('new-word-transcription').value.trim();
-
-    if (!original || !translation) {
-        showToast('❌ Заполните слово и перевод');
-        return;
-    }
-
-    const { error } = await mySupabaseClient
-        .from('words')
-        .insert([{
-            category_id: categoryId,
-            original: original,
-            translation: translation,
-            transcription: transcription || ''
-        }]);
-
-    if (error) {
-        showToast('❌ Ошибка добавления: ' + error.message);
-        return;
-    }
-
-    showToast('✅ Слово добавлено');
-    closeModal();
-    loadCategoryWords(categoryId);
-}
-
-// ============================================================
-// 9. ПРОИЗНОШЕНИЕ
-// ============================================================
-
-function speakWord(text) {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.7;
-    window.speechSynthesis.speak(utterance);
-}
-
-// ============================================================
-// 10. ВКЛАДКИ
-// ============================================================
-
-function switchTab(tabName) {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabName);
-    });
-
-    document.querySelectorAll('.tab-content').forEach(el => {
-        el.classList.toggle('active', el.id === 'tab-' + tabName);
-    });
-
-    if (tabName === 'stats') {
-        renderStats();
-    }
-}
-
-// ============================================================
-// 11. СТАТИСТИКА
-// ============================================================
-
-async function renderStats() {
-    const container = document.getElementById('stats-content');
-    if (!currentUser) {
-        container.innerHTML = `<div class="empty-state"><div class="icon">🔒</div><div class="title">Войдите, чтобы видеть статистику</div></div>`;
-        return;
-    }
-
-    container.innerHTML = `
-        <div class="stats-grid">
-            <div class="stats-item">
-                <div class="value">0</div>
-                <div class="label">Игр сыграно</div>
+                <button onclick="handleLogin()" style="width: 100%; padding: 12px; background: #4A90D9; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">🚀 Войти</button>
+                <button onclick="showRegister()" style="width: 100%; margin-top: 8px; padding: 12px; background: transparent; color: #4A90D9; border: 2px solid #4A90D9; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">📝 Зарегистрироваться</button>
             </div>
-            <div class="stats-item">
-                <div class="value">0%</div>
-                <div class="label">Средний результат</div>
-            </div>
-            <div class="stats-item">
-                <div class="value">0</div>
-                <div class="label">Всего баллов</div>
+
+            <div id="register-form" style="display: none;">
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 6px;">Имя пользователя (уникальное)</label>
+                    <input type="text" id="reg-username" placeholder="Например: ivan" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 6px;">Ваше имя</label>
+                    <input type="text" id="reg-name" placeholder="Например: Иван" style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px;">
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 6px;">Выберите аватар</label>
+                    <div style="display: flex; gap: 12px; font-size: 28px;">
+                        <span onclick="selectAvatar(this)" style="cursor: pointer; padding: 8px; border-radius: 50%; border: 3px solid #4A90D9;">🧒</span>
+                        <span onclick="selectAvatar(this)" style="cursor: pointer; padding: 8px; border-radius: 50%; border: 3px solid transparent;">👦</span>
+                        <span onclick="selectAvatar(this)" style="cursor: pointer; padding: 8px; border-radius: 50%; border: 3px solid transparent;">👧</span>
+                        <span onclick="selectAvatar(this)" style="cursor: pointer; padding: 8px; border-radius: 50%; border: 3px solid transparent;">👶</span>
+                        <span onclick="selectAvatar(this)" style="cursor: pointer; padding: 8px; border-radius: 50%; border: 3px solid transparent;">🦊</span>
+                    </div>
+                    <input type="hidden" id="reg-avatar" value="🧒">
+                </div>
+                <button onclick="handleRegister()" style="width: 100%; padding: 12px; background: #4A90D9; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">✅ Создать аккаунт</button>
+                <button onclick="showLogin()" style="width: 100%; margin-top: 8px; padding: 12px; background: transparent; color: #4A90D9; border: 2px solid #4A90D9; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer;">← Уже есть аккаунт?</button>
             </div>
         </div>
-        <div style="background:#fff; border-radius:16px; padding:16px; margin-top:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-            <strong>📋 Статистика собирается...</strong>
-            <p class="text-muted mt-8">Пройдите тесты, чтобы видеть прогресс</p>
+
+        <div id="app-screen" style="display: none;">
+            <div id="user-info" style="display: flex; align-items: center; justify-content: space-between; background: white; border-radius: 16px; padding: 12px 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
+                <span id="user-avatar" style="font-size: 32px;">🧒</span>
+                <span id="user-name" style="font-weight: 600;">Имя</span>
+                <span id="user-points" style="color: #FFB347;">⭐ 0</span>
+                <button onclick="logoutUser()" style="background: none; border: none; color: #ff6b6b; font-size: 18px; cursor: pointer;">🚪</button>
+            </div>
+            <div id="content">
+                <h3>📚 Ваши категории</h3>
+                <button onclick="showCreateCategoryModal()" style="width: 100%; padding: 12px; background: #4A90D9; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 16px;">➕ Создать категорию</button>
+                <div id="categories-list"></div>
+            </div>
         </div>
-    `;
-}
+    </div>
 
-// ============================================================
-// 12. TOAST
-// ============================================================
+    <div id="modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 1000;">
+        <div style="background: white; border-radius: 24px; padding: 24px; max-width: 420px; width: 90%; max-height: 90vh; overflow-y: auto;">
+            <div id="modal-body"></div>
+        </div>
+    </div>
 
-function showToast(message) {
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
+    <script>
+        // ============================================================
+        // 0. SUPABASE CONFIG - ВСТАВЬТЕ ВАШИ ДАННЫЕ!
+        // ============================================================
+        const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co/rest/v1/';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
+        // ============================================================
 
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    document.body.appendChild(toast);
+        const sb = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentUser = null;
 
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transition = 'opacity 0.3s';
-        setTimeout(() => toast.remove(), 300);
-    }, 2500);
-}
+        // ============================================================
+        // 1. AUTH
+        // ============================================================
+        async function registerUser(username, name, avatar) {
+            const { data: existing } = await sb.from('users').select('id').eq('username', username).single();
+            if (existing) { showToast('❌ Пользователь с таким именем уже существует'); return false; }
+            const { data, error } = await sb.from('users').insert([{ username, name, avatar }]).select().single();
+            if (error) { showToast('❌ Ошибка регистрации: ' + error.message); return false; }
+            currentUser = data;
+            localStorage.setItem('currentUserId', data.id);
+            renderApp();
+            showToast('✅ Добро пожаловать, ' + data.name + '!');
+            return true;
+        }
 
-// ============================================================
-// 13. ЗАПУСК
-// ============================================================
+        async function loginUser(username) {
+            const { data, error } = await sb.from('users').select('*').eq('username', username).single();
+            if (error || !data) { showToast('❌ Пользователь не найден'); return false; }
+            currentUser = data;
+            localStorage.setItem('currentUserId', data.id);
+            renderApp();
+            showToast('👋 Привет, ' + data.name + '!');
+            return true;
+        }
 
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        switchTab(btn.dataset.tab);
-    });
-});
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('currentUserId');
+            renderApp();
+            showToast('👋 До свидания!');
+        }
 
-// Проверяем сохранённого пользователя
-checkSavedUser().then(() => {
-    renderApp();
-});
+        async function checkSavedUser() {
+            const userId = localStorage.getItem('currentUserId');
+            if (!userId) return false;
+            const { data, error } = await sb.from('users').select('*').eq('id', userId).single();
+            if (data && !error) { currentUser = data; return true; }
+            return false;
+        }
 
-console.log('📚 Kids Words App готов!');
-</script>
+        function showRegister() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'block';
+        }
+        function showLogin() {
+            document.getElementById('login-form').style.display = 'block';
+            document.getElementById('register-form').style.display = 'none';
+        }
+
+        function selectAvatar(el) {
+            document.querySelectorAll('#register-form span').forEach(s => s.style.borderColor = 'transparent');
+            el.style.borderColor = '#4A90D9';
+            document.getElementById('reg-avatar').value = el.textContent;
+        }
+
+        async function handleLogin() {
+            const username = document.getElementById('login-username').value.trim();
+            if (!username) { showToast('Введите имя пользователя'); return; }
+            await loginUser(username);
+        }
+
+        async function handleRegister() {
+            const username = document.getElementById('reg-username').value.trim();
+            const name = document.getElementById('reg-name').value.trim();
+            const avatar = document.getElementById('reg-avatar').value;
+            if (!username || !name) { showToast('Заполните все поля'); return; }
+            await registerUser(username, name, avatar);
+        }
+
+        // ============================================================
+        // 2. RENDER
+        // ============================================================
+        function renderApp() {
+            const authScreen = document.getElementById('auth-screen');
+            const appScreen = document.getElementById('app-screen');
+            if (!currentUser) {
+                authScreen.style.display = 'block';
+                appScreen.style.display = 'none';
+                return;
+            }
+            authScreen.style.display = 'none';
+            appScreen.style.display = 'block';
+            document.getElementById('user-avatar').textContent = currentUser.avatar || '🧒';
+            document.getElementById('user-name').textContent = currentUser.name || 'Имя';
+            document.getElementById('user-points').textContent = '⭐ ' + (currentUser.total_points || 0);
+            loadCategories();
+        }
+
+        // ============================================================
+        // 3. CATEGORIES
+        // ============================================================
+        async function loadCategories() {
+            if (!currentUser) return;
+            const { data, error } = await sb.from('categories').select('*, words(*)').or(`user_id.eq.${currentUser.id},is_public.eq.true`);
+            if (error) { console.error('Ошибка загрузки категорий:', error); return; }
+            const container = document.getElementById('categories-list');
+            if (!data || data.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#999;">Нет категорий. Создайте первую!</p>';
+                return;
+            }
+            container.innerHTML = data.map(cat => `
+                <div style="background:white; border-radius:16px; padding:16px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                    <span style="display:flex; align-items:center; gap:12px;">
+                        <span style="width:14px; height:14px; border-radius:50%; background:${cat.color || '#4A90D9'};"></span>
+                        <span style="font-weight:600;">${cat.name}</span>
+                        <span style="font-size:13px; color:#999; background:#f0f0f0; padding:2px 10px; border-radius:20px;">${cat.words ? cat.words.length : 0}</span>
+                    </span>
+                    <span>
+                        <button onclick="deleteCategory('${cat.id}')" style="background:none; border:none; color:#ff6b6b; font-size:18px; cursor:pointer;">✕</button>
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // ============================================================
+        // 4. CREATE / DELETE CATEGORY
+        // ============================================================
+        async function createCategory(name, color) {
+            if (!currentUser) return;
+            const { error } = await sb.from('categories').insert([{ user_id: currentUser.id, name, color: color || '#4A90D9', is_public: false }]);
+            if (error) { showToast('❌ Ошибка: ' + error.message); return; }
+            showToast('✅ Категория создана');
+            loadCategories();
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm('Удалить категорию?')) return;
+            const { error } = await sb.from('categories').delete().eq('id', id);
+            if (error) { showToast('❌ Ошибка: ' + error.message); return; }
+            showToast('🗑️ Категория удалена');
+            loadCategories();
+        }
+
+        // ============================================================
+        // 5. MODAL
+        // ============================================================
+        function showModal(html) {
+            document.getElementById('modal-body').innerHTML = html;
+            document.getElementById('modal').style.display = 'flex';
+        }
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function showCreateCategoryModal() {
+            showModal(`
+                <button onclick="closeModal()" style="float:right; background:none; border:none; font-size:24px; cursor:pointer;">✕</button>
+                <h3 style="text-align:center; margin-bottom:16px;">📂 Новая категория</h3>
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-weight:600; margin-bottom:6px;">Название</label>
+                    <input type="text" id="new-cat-name" placeholder="Например: Животные" style="width:100%; padding:12px; border:2px solid #e0e0e0; border-radius:12px; font-size:16px;">
+                </div>
+                <button onclick="handleCreateCategory()" style="width:100%; padding:12px; background:#4A90D9; color:white; border:none; border-radius:12px; font-size:16px; font-weight:600; cursor:pointer;">Создать</button>
+            `);
+        }
+
+        async function handleCreateCategory() {
+            const name = document.getElementById('new-cat-name').value.trim();
+            if (!name) { showToast('Введите название'); return; }
+            await createCategory(name);
+            closeModal();
+        }
+
+        // ============================================================
+        // 6. TOAST
+        // ============================================================
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = 'position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:white; padding:12px 24px; border-radius:12px; font-size:14px; z-index:2000; max-width:90%; text-align:center; animation:fadeIn 0.3s ease;';
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
+        }
+
+        // ============================================================
+        // 7. INIT
+        // ============================================================
+        checkSavedUser().then(() => renderApp());
+        console.log('📚 Kids Words App готов!');
+    </script>
 </body>
 </html>
