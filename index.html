@@ -144,214 +144,179 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
     </div>
 
     <script>
-        // ============================================================
-        // 0. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        // ============================================================
-        function showRegister() {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('register-form').classList.remove('hidden');
-        }
-
-        function showLogin() {
-            document.getElementById('login-form').classList.remove('hidden');
-            document.getElementById('register-form').classList.add('hidden');
-        }
-
-        function selectAvatar(el) {
-            document.querySelectorAll('.avatar-selector span').forEach(s => s.classList.remove('active'));
-            el.classList.add('active');
-            document.getElementById('reg-avatar').value = el.textContent;
-        }
-
-        function showToast(message) {
-            const existing = document.querySelector('.toast');
-            if (existing) existing.remove();
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
-        }
- // ============================================================
-        // 1. SUPABASE CONFIG
-        // ============================================================
-        const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
-        // ============================================================
-
-        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let currentUser = null;
-        let currentProfile = null;
-        // ============================================================
-        // 2. AUTH
-        // ============================================================
-        async function createDefaultCategories(userId) {
-    const defaultCategories = [
-        { name: '🐱 Животные', color: '#B8E1FC' },
-        { name: '👕 Одежда', color: '#C8E6D9' },
-        { name: '🏠 Дом', color: '#E0D4F5' },
-        { name: '🍎 Еда', color: '#FFE0B5' },
-        { name: '🏃 Глаголы', color: '#FADADD' },
-        { name: '🎨 Прилагательные', color: '#B8F0E0' },
-        { name: '🌤️ Погода', color: '#F0D4F0' },
-        { name: '🏫 Школа', color: '#FFF0B5' },
-        { name: '🔢 Числа', color: '#D4E0F5' },
-        { name: '❓ Вопросы', color: '#D4E0F5' }
-    ];
-
-    for (const cat of defaultCategories) {
-        const { error } = await sb
-            .from('categories')
-            .insert([{
-                user_id: userId,
-                name: cat.name,
-                color: cat.color,
-                is_public: true
-            }]);
-
-        if (error) console.error('Ошибка создания категории:', error);
+           // ============================================================
+    // 0. ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ (ПЕРВЫМИ!)
+    // ============================================================
+    function showRegister() {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('register-form').classList.remove('hidden');
     }
-}
 
-    for (const cat of defaultCategories) {
-        // Создаём категорию
-        const { data: category, error: catError } = await sb
-            .from('categories')
-            .insert([{
-                user_id: userId,
-                name: cat.name,
-                color: cat.color,
-                is_public: true
-            }])
-            .select()
-            .single();
+    function showLogin() {
+        document.getElementById('login-form').classList.remove('hidden');
+        document.getElementById('register-form').classList.add('hidden');
+    }
 
-        if (catError) {
-            console.error('Ошибка создания категории:', catError);
-            continue;
-        }
+    function selectAvatar(el) {
+        document.querySelectorAll('.avatar-selector span').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('reg-avatar').value = el.textContent;
+    }
 
-        // Добавляем слова в категорию
-        for (const word of cat.words) {
-            const { error: wordError } = await sb
-                .from('words')
+    function showToast(message) {
+        const existing = document.querySelector('.toast');
+        if (existing) existing.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
+    }
+
+    // ============================================================
+    // 1. SUPABASE CONFIG
+    // ============================================================
+    const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let currentUser = null;
+    let currentProfile = null;
+
+    // ============================================================
+    // 2. СОЗДАНИЕ КАТЕГОРИЙ (ТОЛЬКО КАТЕГОРИИ, БЕЗ СЛОВ!)
+    // ============================================================
+    async function createDefaultCategories(userId) {
+        const defaultCategories = [
+            { name: '🐱 Животные', color: '#B8E1FC' },
+            { name: '👕 Одежда', color: '#C8E6D9' },
+            { name: '🏠 Дом', color: '#E0D4F5' },
+            { name: '🍎 Еда', color: '#FFE0B5' },
+            { name: '🏃 Глаголы', color: '#FADADD' },
+            { name: '🎨 Прилагательные', color: '#B8F0E0' },
+            { name: '🌤️ Погода', color: '#F0D4F0' },
+            { name: '🏫 Школа', color: '#FFF0B5' },
+            { name: '🔢 Числа', color: '#D4E0F5' },
+            { name: '❓ Вопросы', color: '#D4E0F5' }
+        ];
+
+        for (const cat of defaultCategories) {
+            const { error } = await sb
+                .from('categories')
                 .insert([{
-                    category_id: category.id,
-                    original: word.original,
-                    translation: word.translation,
-                    transcription: word.transcription
+                    user_id: userId,
+                    name: cat.name,
+                    color: cat.color,
+                    is_public: true
                 }]);
-
-            if (wordError) {
-                console.error('Ошибка добавления слова:', wordError);
-            }
+            if (error) console.error('Ошибка создания категории:', error);
         }
     }
-}
 
-        async function handleRegister() {
-            const email = document.getElementById('reg-email').value.trim();
-            const username = document.getElementById('reg-username').value.trim();
-            const name = document.getElementById('reg-name').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const avatar = document.getElementById('reg-avatar').value;
+    // ============================================================
+    // 3. AUTH FUNCTIONS
+    // ============================================================
+    async function handleRegister() {
+        const email = document.getElementById('reg-email').value.trim();
+        const username = document.getElementById('reg-username').value.trim();
+        const name = document.getElementById('reg-name').value.trim();
+        const password = document.getElementById('reg-password').value;
+        const avatar = document.getElementById('reg-avatar').value;
 
-            if (!email || !username || !name || !password) {
-                showToast('❌ Заполните все поля');
-                return;
-            }
-            if (password.length < 6) {
-                showToast('❌ Пароль должен быть минимум 6 символов');
-                return;
-            }
-
-            try {
-                const { data, error } = await sb.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: { username, name, avatar }
-                    }
-                });
-
-                if (error) {
-                    showToast('❌ Ошибка регистрации: ' + error.message);
-                    return;
-                }
-
-                await createDefaultCategories(data.user.id);
-
-                currentUser = data.user;
-                await loadProfile();
-                renderApp();
-                showToast('✅ Добро пожаловать, ' + name + '!');
-                showLogin();
-            } catch (e) {
-                showToast('❌ Ошибка: ' + e.message);
-            }
+        if (!email || !username || !name || !password) {
+            showToast('❌ Заполните все поля');
+            return;
+        }
+        if (password.length < 6) {
+            showToast('❌ Пароль должен быть минимум 6 символов');
+            return;
         }
 
-        async function handleLogin() {
-            const email = document.getElementById('login-email').value.trim();
-            const password = document.getElementById('login-password').value;
+        try {
+            const { data, error } = await sb.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: { username, name, avatar }
+                }
+            });
 
-            if (!email || !password) {
-                showToast('❌ Введите email и пароль');
+            if (error) {
+                showToast('❌ Ошибка регистрации: ' + error.message);
                 return;
             }
 
-            try {
-                const { data, error } = await sb.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) {
-                    showToast('❌ Ошибка входа: ' + error.message);
-                    return;
-                }
-
-                currentUser = data.user;
-                await loadProfile();
-                renderApp();
-                showToast('👋 Привет, ' + (currentProfile?.name || '') + '!');
-            } catch (e) {
-                showToast('❌ Ошибка: ' + e.message);
-            }
-        }
-
-        async function handleLogout() {
-            await sb.auth.signOut();
-            currentUser = null;
-            currentProfile = null;
+            await createDefaultCategories(data.user.id);
+            currentUser = data.user;
+            await loadProfile();
             renderApp();
-            showToast('👋 До свидания!');
+            showToast('✅ Добро пожаловать, ' + name + '!');
+            showLogin();
+        } catch (e) {
+            showToast('❌ Ошибка: ' + e.message);
+        }
+    }
+
+    async function handleLogin() {
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!email || !password) {
+            showToast('❌ Введите email и пароль');
+            return;
         }
 
-        async function loadProfile() {
-            if (!currentUser) return;
-            const { data, error } = await sb
-                .from('profiles')
-                .select('*')
-                .eq('id', currentUser.id)
-                .single();
-            if (!error && data) {
-                currentProfile = data;
-            }
-        }
+        try {
+            const { data, error } = await sb.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
 
-        async function checkSession() {
-            const { data } = await sb.auth.getSession();
-            if (data?.session) {
-                currentUser = data.session.user;
-                await loadProfile();
-                return true;
+            if (error) {
+                showToast('❌ Ошибка входа: ' + error.message);
+                return;
             }
-            return false;
+
+            currentUser = data.user;
+            await loadProfile();
+            renderApp();
+            showToast('👋 Привет, ' + (currentProfile?.name || '') + '!');
+        } catch (e) {
+            showToast('❌ Ошибка: ' + e.message);
         }
+    }
+
+    async function handleLogout() {
+        await sb.auth.signOut();
+        currentUser = null;
+        currentProfile = null;
+        renderApp();
+        showToast('👋 До свидания!');
+    }
+
+    async function loadProfile() {
+        if (!currentUser) return;
+        const { data, error } = await sb
+            .from('profiles')
+            .select('*')
+            .eq('id', currentUser.id)
+            .single();
+        if (!error && data) {
+            currentProfile = data;
+        }
+    }
+
+    async function checkSession() {
+        const { data } = await sb.auth.getSession();
+        if (data?.session) {
+            currentUser = data.session.user;
+            await loadProfile();
+            return true;
+        }
+        return false;
+    }
 
         // ============================================================
-        // 3. RENDER
+        // 4. RENDER
         // ============================================================
         function renderApp() {
             const authScreen = document.getElementById('auth-screen');
@@ -373,7 +338,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }
 
         // ============================================================
-        // 4. CATEGORIES
+        // 5. CATEGORIES
         // ============================================================
         async function loadCategories() {
             if (!currentUser) return;
@@ -411,7 +376,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }
 
         // ============================================================
-        // 5. CATEGORY CRUD
+        // 6. CATEGORY CRUD
         // ============================================================
         async function createCategory(name, color) {
             if (!currentUser) return;
@@ -471,7 +436,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }
 
         // ============================================================
-        // 6. WORDS
+        // 7. WORDS
         // ============================================================
         async function addWord(categoryId, original, translation, transcription) {
             if (!currentUser) return;
@@ -495,9 +460,56 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
                 showToast('❌ Ошибка: ' + e.message);
             }
         }
+// ============================================================
+    // 8. SHOW CATEGORY WORDS
+    // ============================================================
+    async function showCategoryWords(categoryId) {
+        try {
+            const { data: category } = await sb
+                .from('categories')
+                .select('*, words(*)')
+                .eq('id', categoryId)
+                .single();
 
+            if (!category) {
+                showToast('❌ Категория не найдена');
+                return;
+            }
+
+            const words = category.words || [];
+            let wordsHtml = '';
+            
+            if (words.length === 0) {
+                wordsHtml = '<p class="text-muted text-center">В этой категории пока нет слов</p>';
+            } else {
+                wordsHtml = words.map(word => `
+                    <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0;">
+                        <div>
+                            <strong>${word.original}</strong>
+                            ${word.transcription ? `<span style="color:#888; font-size:14px;">${word.transcription}</span>` : ''}
+                        </div>
+                        <div style="color:#666;">${word.translation}</div>
+                    </div>
+                `).join('');
+            }
+
+            showModal(`
+                <button class="modal-close" onclick="closeModal()">✕</button>
+                <h3 style="text-align:center; margin-bottom:16px;">📚 ${category.name}</h3>
+                ${category.user_id === currentUser.id ? `
+                    <button class="btn btn-success btn-sm" onclick="closeModal(); showAddWordModal('${categoryId}')">➕ Добавить слово</button>
+                    <button class="btn btn-outline btn-sm" onclick="closeModal(); showImportWordsModal('${categoryId}')">📤 Импорт</button>
+                ` : ''}
+                <div style="margin-top:16px;">
+                    ${wordsHtml}
+                </div>
+            `);
+        } catch (e) {
+            showToast('❌ Ошибка загрузки слов: ' + e.message);
+        }
+    }
         // ============================================================
-        // 7. MODAL
+        // 9. MODAL
         // ============================================================
         function showModal(html) {
             document.getElementById('modal-body').innerHTML = html;
@@ -591,7 +603,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         }
 
         // ============================================================
-        // 8. INIT
+        // 10. INIT
         // ============================================================
         checkSession().then(() => {
             renderApp();
