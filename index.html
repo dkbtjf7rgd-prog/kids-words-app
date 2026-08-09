@@ -210,30 +210,312 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         // 1. AUTH FUNCTIONS
         // ============================================================
 
-        async function createDefaultCategories(userId) {
-            const defaultCategories = [
-                { name: '🐱 Животные', color: '#B8E1FC' },
-                { name: '👕 Одежда', color: '#C8E6D9' },
-                { name: '🏠 Дом', color: '#E0D4F5' },
-                { name: '🍎 Еда', color: '#FFE0B5' },
-                { name: '🏃 Глаголы', color: '#FADADD' },
-                { name: '🎨 Прилагательные', color: '#B8F0E0' },
-                { name: '🌤️ Погода', color: '#F0D4F0' },
-                { name: '🏫 Школа', color: '#FFF0B5' },
-                { name: '🔢 Числа', color: '#D4E0F5' },
-                { name: '❓ Вопросы', color: '#D4E0F5' }
-            ];
+       // ============================================================
+// СТАНДАРТНЫЕ КАТЕГОРИИ СО СЛОВАМИ
+// ============================================================
+async function createDefaultCategories(userId) {
+    const defaultCategories = [
+        {
+            name: '🐱 Животные',
+            color: '#B8E1FC',
+            words: [
+                { original: 'cat', translation: 'кошка', transcription: '[kæt]' },
+                { original: 'dog', translation: 'собака', transcription: '[dɒɡ]' },
+                { original: 'bird', translation: 'птица', transcription: '[bɜːd]' },
+                { original: 'fish', translation: 'рыба', transcription: '[fɪʃ]' },
+                { original: 'rabbit', translation: 'кролик', transcription: '[ˈræbɪt]' },
+                { original: 'mouse', translation: 'мышь', transcription: '[maʊs]' },
+                { original: 'frog', translation: 'лягушка', transcription: '[frɒɡ]' },
+                { original: 'horse', translation: 'лошадь', transcription: '[hɔːs]' },
+                { original: 'cow', translation: 'корова', transcription: '[kaʊ]' },
+                { original: 'pig', translation: 'свинья', transcription: '[pɪɡ]' },
+                { original: 'sheep', translation: 'овца', transcription: '[ʃiːp]' },
+                { original: 'duck', translation: 'утка', transcription: '[dʌk]' },
+                { original: 'elephant', translation: 'слон', transcription: '[ˈelɪfənt]' },
+                { original: 'giraffe', translation: 'жираф', transcription: '[dʒɪˈrɑːf]' },
+                { original: 'lion', translation: 'лев', transcription: '[ˈlaɪən]' },
+                { original: 'tiger', translation: 'тигр', transcription: '[ˈtaɪɡə]' },
+                { original: 'monkey', translation: 'обезьяна', transcription: '[ˈmʌŋki]' },
+                { original: 'zebra', translation: 'зебра', transcription: '[ˈziːbrə]' },
+                { original: 'chimp', translation: 'шимпанзе', transcription: '[tʃɪmp]' }
+            ]
+        },
+        {
+            name: '👕 Одежда',
+            color: '#C8E6D9',
+            words: [
+                { original: 'dress', translation: 'платье', transcription: '[dres]' },
+                { original: 'shirt', translation: 'рубашка', transcription: '[ʃɜːt]' },
+                { original: 'T-shirt', translation: 'футболка', transcription: '[ˈtiː ʃɜːt]' },
+                { original: 'skirt', translation: 'юбка', transcription: '[skɜːt]' },
+                { original: 'trousers', translation: 'брюки', transcription: '[ˈtraʊzəz]' },
+                { original: 'jeans', translation: 'джинсы', transcription: '[dʒiːnz]' },
+                { original: 'shoes', translation: 'туфли', transcription: '[ʃuːz]' },
+                { original: 'boots', translation: 'ботинки', transcription: '[buːts]' },
+                { original: 'socks', translation: 'носки', transcription: '[sɒks]' },
+                { original: 'hat', translation: 'шапка', transcription: '[hæt]' },
+                { original: 'cap', translation: 'кепка', transcription: '[kæp]' },
+                { original: 'coat', translation: 'пальто', transcription: '[kəʊt]' },
+                { original: 'jacket', translation: 'куртка', transcription: '[ˈdʒækɪt]' },
+                { original: 'sweater', translation: 'свитер', transcription: '[ˈswetə]' },
+                { original: 'scarf', translation: 'шарф', transcription: '[skɑːf]' },
+                { original: 'gloves', translation: 'перчатки', transcription: '[ɡlʌvz]' },
+                { original: 'fair hair', translation: 'светлые волосы', transcription: '[\'feə heə(r)]' },
+                { original: 'dark hair', translation: 'тёмные волосы', transcription: '[dɑːk heə(r)]' }
+            ]
+        },
+        {
+            name: '🏠 Дом',
+            color: '#E0D4F5',
+            words: [
+                { original: 'house', translation: 'дом', transcription: '[haʊs]' },
+                { original: 'flat', translation: 'квартира', transcription: '[flæt]' },
+                { original: 'room', translation: 'комната', transcription: '[ruːm]' },
+                { original: 'kitchen', translation: 'кухня', transcription: '[ˈkɪtʃɪn]' },
+                { original: 'bedroom', translation: 'спальня', transcription: '[ˈbedruːm]' },
+                { original: 'bathroom', translation: 'ванная', transcription: '[ˈbɑːθruːm]' },
+                { original: 'living room', translation: 'гостиная', transcription: '[ˈlɪvɪŋ ruːm]' },
+                { original: 'door', translation: 'дверь', transcription: '[dɔː]' },
+                { original: 'window', translation: 'окно', transcription: '[ˈwɪndəʊ]' },
+                { original: 'wall', translation: 'стена', transcription: '[wɔːl]' },
+                { original: 'floor', translation: 'пол', transcription: '[flɔː]' },
+                { original: 'ceiling', translation: 'потолок', transcription: '[ˈsiːlɪŋ]' },
+                { original: 'table', translation: 'стол', transcription: '[ˈteɪbəl]' },
+                { original: 'chair', translation: 'стул', transcription: '[tʃeə]' },
+                { original: 'bed', translation: 'кровать', transcription: '[bed]' },
+                { original: 'sofa', translation: 'диван', transcription: '[ˈsəʊfə]' },
+                { original: 'wardrobe', translation: 'шкаф', transcription: '[ˈwɔːdrəʊb]' },
+                { original: 'shelf', translation: 'полка', transcription: '[ʃelf]' },
+                { original: 'candle', translation: 'свеча', transcription: '[\'kændl]' },
+                { original: 'toy box', translation: 'коробка для игрушек', transcription: '[ˈtɔɪ bɒks]' }
+            ]
+        },
+        {
+            name: '🍎 Еда',
+            color: '#FFE0B5',
+            words: [
+                { original: 'apple', translation: 'яблоко', transcription: '[ˈæpəl]' },
+                { original: 'banana', translation: 'банан', transcription: '[bəˈnɑːnə]' },
+                { original: 'orange', translation: 'апельсин', transcription: '[ˈɒrɪndʒ]' },
+                { original: 'pear', translation: 'груша', transcription: '[peə]' },
+                { original: 'grape', translation: 'виноград', transcription: '[ɡreɪp]' },
+                { original: 'bread', translation: 'хлеб', transcription: '[bred]' },
+                { original: 'butter', translation: 'масло', transcription: '[ˈbʌtə]' },
+                { original: 'milk', translation: 'молоко', transcription: '[mɪlk]' },
+                { original: 'juice', translation: 'сок', transcription: '[dʒuːs]' },
+                { original: 'water', translation: 'вода', transcription: '[ˈwɔːtə]' },
+                { original: 'cake', translation: 'торт', transcription: '[keɪk]' },
+                { original: 'ice cream', translation: 'мороженое', transcription: '[ˈaɪs kriːm]' },
+                { original: 'sweet', translation: 'конфета', transcription: '[swiːt]' },
+                { original: 'meat', translation: 'мясо', transcription: '[miːt]' },
+                { original: 'egg', translation: 'яйцо', transcription: '[eɡ]' },
+                { original: 'cheese', translation: 'сыр', transcription: '[tʃiːz]' },
+                { original: 'soup', translation: 'суп', transcription: '[suːp]' },
+                { original: 'tea', translation: 'чай', transcription: '[tiː]' },
+                { original: 'breakfast', translation: 'завтрак', transcription: '[ˈbrekfəst]' },
+                { original: 'lunch', translation: 'обед', transcription: '[lʌntʃ]' },
+                { original: 'dinner', translation: 'ужин', transcription: '[ˈdɪnə]' }
+            ]
+        },
+        {
+            name: '🏃 Глаголы',
+            color: '#FADADD',
+            words: [
+                { original: 'run', translation: 'бегать', transcription: '[rʌn]' },
+                { original: 'walk', translation: 'гулять', transcription: '[wɔːk]' },
+                { original: 'jump', translation: 'прыгать', transcription: '[dʒʌmp]' },
+                { original: 'swim', translation: 'плавать', transcription: '[swɪm]' },
+                { original: 'sleep', translation: 'спать', transcription: '[sliːp]' },
+                { original: 'eat', translation: 'есть', transcription: '[iːt]' },
+                { original: 'drink', translation: 'пить', transcription: '[drɪŋk]' },
+                { original: 'play', translation: 'играть', transcription: '[pleɪ]' },
+                { original: 'read', translation: 'читать', transcription: '[riːd]' },
+                { original: 'write', translation: 'писать', transcription: '[raɪt]' },
+                { original: 'draw', translation: 'рисовать', transcription: '[drɔː]' },
+                { original: 'sing', translation: 'петь', transcription: '[sɪŋ]' },
+                { original: 'dance', translation: 'танцевать', transcription: '[dɑːns]' },
+                { original: 'watch', translation: 'смотреть', transcription: '[wɒtʃ]' },
+                { original: 'listen', translation: 'слушать', transcription: '[ˈlɪsn]' },
+                { original: 'go', translation: 'идти', transcription: '[ɡəʊ]' },
+                { original: 'come', translation: 'приходить', transcription: '[kʌm]' },
+                { original: 'sit', translation: 'сидеть', transcription: '[sɪt]' },
+                { original: 'stand', translation: 'стоять', transcription: '[stænd]' },
+                { original: 'open', translation: 'открывать', transcription: '[ˈəʊpən]' },
+                { original: 'close', translation: 'закрывать', transcription: '[kləʊz]' },
+                { original: 'give', translation: 'давать', transcription: '[ɡɪv]' },
+                { original: 'take', translation: 'брать', transcription: '[teɪk]' },
+                { original: 'help', translation: 'помогать', transcription: '[help]' },
+                { original: 'like', translation: 'нравиться', transcription: '[laɪk]' }
+            ]
+        },
+        {
+            name: '🎨 Прилагательные',
+            color: '#B8F0E0',
+            words: [
+                { original: 'big', translation: 'большой', transcription: '[bɪɡ]' },
+                { original: 'small', translation: 'маленький', transcription: '[smɔːl]' },
+                { original: 'long', translation: 'длинный', transcription: '[lɒŋ]' },
+                { original: 'short', translation: 'короткий', transcription: '[ʃɔːt]' },
+                { original: 'tall', translation: 'высокий', transcription: '[tɔːl]' },
+                { original: 'happy', translation: 'счастливый', transcription: '[ˈhæpi]' },
+                { original: 'sad', translation: 'грустный', transcription: '[sæd]' },
+                { original: 'good', translation: 'хороший', transcription: '[ɡʊd]' },
+                { original: 'bad', translation: 'плохой', transcription: '[bæd]' },
+                { original: 'nice', translation: 'хороший', transcription: '[naɪs]' },
+                { original: 'new', translation: 'новый', transcription: '[njuː]' },
+                { original: 'old', translation: 'старый', transcription: '[əʊld]' },
+                { original: 'clean', translation: 'чистый', transcription: '[kliːn]' },
+                { original: 'dirty', translation: 'грязный', transcription: '[ˈdɜːti]' },
+                { original: 'red', translation: 'красный', transcription: '[red]' },
+                { original: 'blue', translation: 'синий', transcription: '[bluː]' },
+                { original: 'yellow', translation: 'жёлтый', transcription: '[ˈjeləʊ]' },
+                { original: 'green', translation: 'зелёный', transcription: '[ɡriːn]' },
+                { original: 'pink', translation: 'розовый', transcription: '[pɪŋk]' },
+                { original: 'purple', translation: 'фиолетовый', transcription: '[ˈpɜːpl]' },
+                { original: 'orange', translation: 'оранжевый', transcription: '[ˈɒrɪndʒ]' },
+                { original: 'black', translation: 'чёрный', transcription: '[blæk]' },
+                { original: 'white', translation: 'белый', transcription: '[waɪt]' },
+                { original: 'brown', translation: 'коричневый', transcription: '[braʊn]' }
+            ]
+        },
+        {
+            name: '🌤️ Погода',
+            color: '#F0D4F0',
+            words: [
+                { original: 'sun', translation: 'солнце', transcription: '[sʌn]' },
+                { original: 'sunny', translation: 'солнечно', transcription: '[ˈsʌni]' },
+                { original: 'rain', translation: 'дождь', transcription: '[reɪn]' },
+                { original: 'rainy', translation: 'дождливо', transcription: '[ˈreɪni]' },
+                { original: 'snow', translation: 'снег', transcription: '[snəʊ]' },
+                { original: 'wind', translation: 'ветер', transcription: '[wɪnd]' },
+                { original: 'windy', translation: 'ветрено', transcription: '[ˈwɪndi]' },
+                { original: 'cloud', translation: 'облако', transcription: '[klaʊd]' },
+                { original: 'cloudy', translation: 'облачно', transcription: '[ˈklaʊdi]' },
+                { original: 'sky', translation: 'небо', transcription: '[skaɪ]' },
+                { original: 'tree', translation: 'дерево', transcription: '[triː]' },
+                { original: 'flower', translation: 'цветок', transcription: '[ˈflaʊə]' },
+                { original: 'grass', translation: 'трава', transcription: '[ɡrɑːs]' },
+                { original: 'river', translation: 'река', transcription: '[ˈrɪvə]' },
+                { original: 'lake', translation: 'озеро', transcription: '[leɪk]' },
+                { original: 'sea', translation: 'море', transcription: '[siː]' },
+                { original: 'summer', translation: 'лето', transcription: '[ˈsʌmə]' },
+                { original: 'winter', translation: 'зима', transcription: '[ˈwɪntə]' },
+                { original: 'spring', translation: 'весна', transcription: '[spriŋ]' },
+                { original: 'autumn', translation: 'осень', transcription: '[ˈɔːtəm]' },
+                { original: 'warm', translation: 'тёплый', transcription: '[wɔːm]' },
+                { original: 'cold', translation: 'холодный', transcription: '[kəʊld]' },
+                { original: 'hot', translation: 'жаркий', transcription: '[hɒt]' }
+            ]
+        },
+        {
+            name: '🏫 Школа',
+            color: '#FFF0B5',
+            words: [
+                { original: 'school', translation: 'школа', transcription: '[skuːl]' },
+                { original: 'classroom', translation: 'класс', transcription: '[ˈklɑːsruːm]' },
+                { original: 'teacher', translation: 'учитель', transcription: '[ˈtiːtʃə]' },
+                { original: 'pupil', translation: 'ученик', transcription: '[ˈpjuːpəl]' },
+                { original: 'desk', translation: 'парта', transcription: '[desk]' },
+                { original: 'book', translation: 'книга', transcription: '[bʊk]' },
+                { original: 'notebook', translation: 'тетрадь', transcription: '[ˈnəʊtbʊk]' },
+                { original: 'pen', translation: 'ручка', transcription: '[pen]' },
+                { original: 'pencil', translation: 'карандаш', transcription: '[ˈpensl]' },
+                { original: 'rubber', translation: 'ластик', transcription: '[ˈrʌbə]' },
+                { original: 'ruler', translation: 'линейка', transcription: '[ˈruːlə]' },
+                { original: 'bag', translation: 'сумка', transcription: '[bæɡ]' },
+                { original: 'toy', translation: 'игрушка', transcription: '[tɔɪ]' },
+                { original: 'ball', translation: 'мяч', transcription: '[bɔːl]' },
+                { original: 'doll', translation: 'кукла', transcription: '[dɒl]' }
+            ]
+        },
+        {
+            name: '🔢 Числа',
+            color: '#D4E0F5',
+            words: [
+                { original: 'one', translation: 'один', transcription: '[wʌn]' },
+                { original: 'two', translation: 'два', transcription: '[tuː]' },
+                { original: 'three', translation: 'три', transcription: '[θriː]' },
+                { original: 'four', translation: 'четыре', transcription: '[fɔː]' },
+                { original: 'five', translation: 'пять', transcription: '[faɪv]' },
+                { original: 'six', translation: 'шесть', transcription: '[sɪks]' },
+                { original: 'seven', translation: 'семь', transcription: '[ˈsevən]' },
+                { original: 'eight', translation: 'восемь', transcription: '[eɪt]' },
+                { original: 'nine', translation: 'девять', transcription: '[naɪn]' },
+                { original: 'ten', translation: 'десять', transcription: '[ten]' },
+                { original: 'eleven', translation: 'одиннадцать', transcription: '[ɪˈlevən]' },
+                { original: 'twelve', translation: 'двенадцать', transcription: '[twelv]' },
+                { original: 'thirteen', translation: 'тринадцать', transcription: '[ˌθɜːˈtiːn]' },
+                { original: 'fourteen', translation: 'четырнадцать', transcription: '[ˌfɔːˈtiːn]' },
+                { original: 'fifteen', translation: 'пятнадцать', transcription: '[ˌfɪfˈtiːn]' },
+                { original: 'sixteen', translation: 'шестнадцать', transcription: '[ˌsɪkˈstiːn]' },
+                { original: 'seventeen', translation: 'семнадцать', transcription: '[ˌsevənˈtiːn]' },
+                { original: 'eighteen', translation: 'восемнадцать', transcription: '[ˌeɪˈtiːn]' },
+                { original: 'nineteen', translation: 'девятнадцать', transcription: '[ˌnaɪnˈtiːn]' },
+                { original: 'twenty', translation: 'двадцать', transcription: '[ˈtwenti]' }
+            ]
+        },
+        {
+            name: '❓ Вопросы',
+            color: '#D4E0F5',
+            words: [
+                { original: 'what', translation: 'что', transcription: '[wɒt]' },
+                { original: 'who', translation: 'кто', transcription: '[huː]' },
+                { original: 'where', translation: 'где', transcription: '[weə]' },
+                { original: 'when', translation: 'когда', transcription: '[wen]' },
+                { original: 'why', translation: 'почему', transcription: '[waɪ]' },
+                { original: 'how', translation: 'как', transcription: '[haʊ]' },
+                { original: 'how many', translation: 'сколько', transcription: '[haʊ ˈmeni]' },
+                { original: 'in', translation: 'в', transcription: '[ɪn]' },
+                { original: 'on', translation: 'на', transcription: '[ɒn]' },
+                { original: 'under', translation: 'под', transcription: '[ˈʌndə]' },
+                { original: 'behind', translation: 'за', transcription: '[bɪˈhaɪnd]' },
+                { original: 'in front of', translation: 'перед', transcription: '[ɪn frʌnt əv]' },
+                { original: 'between', translation: 'между', transcription: '[bɪˈtwiːn]' },
+                { original: 'near', translation: 'рядом', transcription: '[nɪə]' },
+                { original: 'with', translation: 'с', transcription: '[wɪð]' },
+                { original: 'without', translation: 'без', transcription: '[wɪˈðaʊt]' },
+                { original: 'for', translation: 'для', transcription: '[fɔː]' },
+                { original: 'to', translation: 'к', transcription: '[tuː]' },
+                { original: 'from', translation: 'от', transcription: '[frɒm]' }
+            ]
+        }
+    ];
 
-            for (const cat of defaultCategories) {
-                await sb.from('categories').insert([{
-                    user_id: userId,
-                    name: cat.name,
-                    color: cat.color,
-                    is_public: true
-                }]);
-            }
+    for (const cat of defaultCategories) {
+        // Создаём категорию
+        const { data: category, error: catError } = await sb
+            .from('categories')
+            .insert([{
+                user_id: userId,
+                name: cat.name,
+                color: cat.color,
+                is_public: true
+            }])
+            .select()
+            .single();
+
+        if (catError) {
+            console.error('Ошибка создания категории:', catError);
+            continue;
         }
 
+        // Добавляем слова в категорию
+        for (const word of cat.words) {
+            const { error: wordError } = await sb
+                .from('words')
+                .insert([{
+                    category_id: category.id,
+                    original: word.original,
+                    translation: word.translation,
+                    transcription: word.transcription
+                }]);
+
+            if (wordError) {
+                console.error('Ошибка добавления слова:', wordError);
+            }
+        }
+    }
+}
         async function handleRegister() {
             const email = document.getElementById('reg-email').value.trim();
             const username = document.getElementById('reg-username').value.trim();
@@ -399,42 +681,44 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         // 4. CATEGORY CRUD
         // ============================================================
         async function createCategory(name, color) {
-            if (!currentUser) return;
-            try {
-                const { data: existing } = await sb
-                    .from('categories')
-                    .select('id')
-                    .eq('user_id', currentUser.id)
-                    .eq('name', name)
-                    .single();
+    if (!currentUser) return;
+    try {
+        // Проверяем существование категории
+        const { data: existing } = await sb
+            .from('categories')
+            .select('id')
+            .eq('user_id', currentUser.id)
+            .eq('name', name)
+            .maybeSingle();
 
-                if (existing) {
-                    showToast('❌ Категория с таким названием уже существует');
-                    return;
-                }
-
-                const { data, error } = await sb
-                    .from('categories')
-                    .insert([{
-                        user_id: currentUser.id,
-                        name: name,
-                        color: color || '#4A90D9',
-                        is_public: false
-                    }])
-                    .select()
-                    .single();
-
-                if (error) {
-                    showToast('❌ Ошибка: ' + error.message);
-                    return;
-                }
-                showToast('✅ Категория создана');
-                loadCategories();
-                setTimeout(() => showAddWordModal(data.id), 300);
-            } catch (e) {
-                showToast('❌ Ошибка: ' + e.message);
-            }
+        if (existing) {
+            showToast('❌ Категория с таким названием уже существует');
+            return;
         }
+
+        const { data, error } = await sb
+            .from('categories')
+            .insert([{
+                user_id: currentUser.id,
+                name: name,
+                color: color || '#4A90D9',
+                is_public: false
+            }])
+            .select()
+            .single();
+
+        if (error) {
+            showToast('❌ Ошибка: ' + error.message);
+            return;
+        }
+        showToast('✅ Категория создана');
+        loadCategories();
+        setTimeout(() => showAddWordModal(data.id), 300);
+    } catch (e) {
+        console.error('Ошибка создания категории:', e);
+        showToast('❌ Ошибка: ' + e.message);
+    }
+}
 
         async function deleteCategory(id) {
             if (!confirm('Удалить категорию?')) return;
