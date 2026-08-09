@@ -127,7 +127,11 @@
                                                     'Authorization': `Bearer ${SUPABASE_KEY}`
                                                 }
                                             });
-                                            const data = await response.json();
+                                            const text = await response.text();
+                                            if (!text || text.trim() === '') {
+                                                return { data: null, error: null };
+                                            }
+                                            const data = JSON.parse(text);
                                             if (response.ok) {
                                                 return { data: data.length ? data[0] : null, error: null };
                                             } else {
@@ -146,7 +150,11 @@
                                                     'Authorization': `Bearer ${SUPABASE_KEY}`
                                                 }
                                             });
-                                            const data = await response.json();
+                                            const text = await response.text();
+                                            if (!text || text.trim() === '') {
+                                                return { data: null, error: null };
+                                            }
+                                            const data = JSON.parse(text);
                                             if (response.ok && data.length) {
                                                 return { data: data[0], error: null };
                                             } else {
@@ -169,7 +177,11 @@
                                                     'Authorization': `Bearer ${SUPABASE_KEY}`
                                                 }
                                             });
-                                            const data = await response.json();
+                                            const text = await response.text();
+                                            if (!text || text.trim() === '') {
+                                                return { data: null, error: null };
+                                            }
+                                            const data = JSON.parse(text);
                                             if (response.ok) {
                                                 return { data: data.length ? data[0] : null, error: null };
                                             } else {
@@ -188,7 +200,11 @@
                                                     'Authorization': `Bearer ${SUPABASE_KEY}`
                                                 }
                                             });
-                                            const data = await response.json();
+                                            const text = await response.text();
+                                            if (!text || text.trim() === '') {
+                                                return { data: null, error: null };
+                                            }
+                                            const data = JSON.parse(text);
                                             if (response.ok && data.length) {
                                                 return { data: data[0], error: null };
                                             } else {
@@ -208,7 +224,12 @@
                                             'Authorization': `Bearer ${SUPABASE_KEY}`
                                         }
                                     });
-                                    const data = await response.json();
+                                    const text = await response.text();
+                                    if (!text || text.trim() === '') {
+                                        resolve({ data: [], error: null });
+                                        return;
+                                    }
+                                    const data = JSON.parse(text);
                                     if (response.ok) {
                                         resolve({ data, error: null });
                                     } else {
@@ -235,7 +256,11 @@
                                                 },
                                                 body: JSON.stringify(data)
                                             });
-                                            const result = await response.json();
+                                            const text = await response.text();
+                                            if (!text || text.trim() === '') {
+                                                return { data: null, error: null };
+                                            }
+                                            const result = JSON.parse(text);
                                             if (response.ok) {
                                                 return { data: result.length ? result[0] : result, error: null };
                                             } else {
@@ -258,7 +283,12 @@
                                         },
                                         body: JSON.stringify(data)
                                     });
-                                    const result = await response.json();
+                                    const text = await response.text();
+                                    if (!text || text.trim() === '') {
+                                        resolve({ data: [], error: null });
+                                        return;
+                                    }
+                                    const result = JSON.parse(text);
                                     if (response.ok) {
                                         resolve({ data: result, error: null });
                                     } else {
@@ -287,7 +317,8 @@
                                             if (response.ok) {
                                                 resolve({ data: { success: true }, error: null });
                                             } else {
-                                                const error = await response.json();
+                                                const text = await response.text();
+                                                const error = text ? JSON.parse(text) : { message: 'Ошибка удаления' };
                                                 resolve({ data: null, error });
                                             }
                                         } catch (e) {
@@ -314,7 +345,12 @@
                                                 },
                                                 body: JSON.stringify(data)
                                             });
-                                            const result = await response.json();
+                                            const text = await response.text();
+                                            if (!text || text.trim() === '') {
+                                                resolve({ data: { success: true }, error: null });
+                                                return;
+                                            }
+                                            const result = JSON.parse(text);
                                             if (response.ok) {
                                                 resolve({ data: result, error: null });
                                             } else {
@@ -343,7 +379,12 @@
                                 },
                                 body: JSON.stringify(params)
                             });
-                            const data = await response.json();
+                            const text = await response.text();
+                            if (!text || text.trim() === '') {
+                                resolve({ data: null, error: null });
+                                return;
+                            }
+                            const data = JSON.parse(text);
                             if (response.ok) {
                                 resolve({ data, error: null });
                             } else {
