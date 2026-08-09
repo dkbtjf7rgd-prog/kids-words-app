@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kids Words</title>
+    <!-- ✅ ПОДКЛЮЧАЕМ БИБЛИОТЕКУ ПЕРВОЙ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -75,6 +76,7 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
         // ============================================================
 
+        // ✅ СОЗДАЁМ КЛИЕНТ ДО ВСЕХ ФУНКЦИЙ
         const sb = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentUser = null;
 
@@ -82,7 +84,8 @@
         // 1. AUTH
         // ============================================================
         async function registerUser(username, name, avatar) {
-            const { data: existing } = await sb.from('users').select('id').eq('username', username).single();
+            console.log('📝 Регистрация:', username);
+            const { data: existing } = await sb.from('users').select('id').eq('username', username).maybeSingle();
             if (existing) { showToast('❌ Пользователь с таким именем уже существует'); return false; }
             const { data, error } = await sb.from('users').insert([{ username, name, avatar }]).select().single();
             if (error) { showToast('❌ Ошибка регистрации: ' + error.message); return false; }
@@ -94,7 +97,8 @@
         }
 
         async function loginUser(username) {
-            const { data, error } = await sb.from('users').select('*').eq('username', username).single();
+            console.log('🔑 Вход:', username);
+            const { data, error } = await sb.from('users').select('*').eq('username', username).maybeSingle();
             if (error || !data) { showToast('❌ Пользователь не найден'); return false; }
             currentUser = data;
             localStorage.setItem('currentUserId', data.id);
@@ -113,7 +117,7 @@
         async function checkSavedUser() {
             const userId = localStorage.getItem('currentUserId');
             if (!userId) return false;
-            const { data, error } = await sb.from('users').select('*').eq('id', userId).single();
+            const { data, error } = await sb.from('users').select('*').eq('id', userId).maybeSingle();
             if (data && !error) { currentUser = data; return true; }
             return false;
         }
@@ -134,12 +138,14 @@
         }
 
         async function handleLogin() {
+            console.log('✅ Кнопка "Войти" нажата');
             const username = document.getElementById('login-username').value.trim();
             if (!username) { showToast('Введите имя пользователя'); return; }
             await loginUser(username);
         }
 
         async function handleRegister() {
+            console.log('✅ Кнопка "Создать аккаунт" нажата');
             const username = document.getElementById('reg-username').value.trim();
             const name = document.getElementById('reg-name').value.trim();
             const avatar = document.getElementById('reg-avatar').value;
