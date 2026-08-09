@@ -258,13 +258,9 @@
 // ============================================================
 // 0. SUPABASE CONFIG
 // ============================================================
-
-// ============================================================
-// 0. SUPABASE CONFIG - ВСТАВЬТЕ ВАШИ ДАННЫЕ!
-// ============================================================
 const SUPABASE_URL = 'https://lcphvftkjgsclcqpkegd.supabase.co/rest/v1/';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
-// ============================================================
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk'
+    // ============================================================
 
 const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -391,4 +387,488 @@ async function loadCategoriesFromSupabase() {
     const { data, error } = await supabase
         .from('categories')
         .select('*, words(*)')
-        .or(`user_id.eq.${currentUser.id},
+        .or(`user_id.eq.${currentUser.id},is_public.eq.true`);
+
+    if (error) {
+        console.error('Ошибка загрузки категорий:', error);
+        return [];
+    }
+
+    return data || [];
+}
+
+function renderApp() {
+    const authScreen = document.getElementById('auth-screen');
+    const appScreen = document.getElementById('app');
+
+    if (!currentUser) {
+        authScreen.style.display = 'block';
+        appScreen.style.display = 'none';
+        return;
+    }
+
+    authScreen.style.display = 'none';
+    appScreen.style.display = 'block';
+
+    // Обновляем информацию о пользователе
+    document.getElementById('user-avatar').textContent = currentUser.avatar || '🧒';
+    document.getElementById('user-name').textContent = currentUser.name || 'Имя';
+    document.getElementById('user-points').textContent = currentUser.total_points || 0;
+
+    // Загружаем категории
+    loadCategoriesFromSupabase().then(categories => {
+        renderCategories(categories);
+    });
+}
+
+function renderCategories(categories) {
+    const container = document.getElementById('categories-list');
+    if (!categories || categories.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📂</div>
+                <div class="title">Нет категорий</div>
+                <p class="text-muted mt-8">Создайте свою первую категорию</p>
+            </div>
+        `;
+        return;
+    }
+
+    let html = '';
+    categories.forEach(cat => {
+        const wordCount = cat.words ? cat.words.length : 0;
+        html += `
+            <div class="category-card" onclick="openCategory('${cat.id}')">
+                <span class="color-dot" style="background:${cat.color || '#4A90D9'}"></span>
+                <span class="name">${cat.name}</span>
+                <span class="count">${wordCount}</span>
+                <button class="edit-btn" onclick="event.stopPropagation(); showEditCategoryModal('${cat.id}')">✏️</button>
+                <button class="delete-btn" onclick="event.stopPropagation(); deleteCategory('${cat.id}')">✕</button>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+// ============================================================
+// 3. КАТЕГОРИИ (CRUD)
+// ============================================================
+
+async function createCategory(name, color) {
+    if (!currentUser) return;
+
+    const { data, error } = await supabase
+        .from('categories')
+        .insert([{
+            user_id: currentUser.id,
+            name: name,
+            color: color || '#4A90D9',
+            is_public: false
+        }])
+        .select()
+        .single();
+
+    if (error) {
+        showToast('❌ Ошибка создания: ' + error.message);
+        return;
+    }
+
+    showToast('✅ Категория создана');
+    renderApp();
+}
+
+async function deleteCategory(id) {
+    if (!confirm('Удалить категорию и все слова в ней?')) return;
+
+    const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        showToast('❌ Ошибка удаления: ' + error.message);
+        return;
+    }
+
+    showToast('🗑️ Категория удалена');
+    renderApp();
+}
+
+async function editCategory(id, newName, newColor) {
+    const { error } = await supabase
+        .from('categories')
+        .update({ name: newName, color: newColor })
+        .eq('id', id);
+
+    if (error) {
+        showToast('❌ Ошибка обновления: ' + error.message);
+        return;
+    }
+
+    showToast('✏️ Категория обновлена');
+    renderApp();
+}
+
+// ============================================================
+// 4. МОДАЛЬНЫЕ ОКНА
+// ============================================================
+
+function showModal(html) {
+    document.getElementById('modal-body').innerHTML = html;
+    document.getElementById('modal').classList.remove('hidden');
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.add('hidden');
+}
+
+function showCreateCategoryModal() {
+    showModal(`
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">📂 Новая категория</div>
+        <div class="form-group">
+            <label>Название категории</label>
+            <input type="text" id="new-cat-name" placeholder="Например: Животные">
+        </div>
+        <div class="form-group">
+            <label>Цвет</label>
+            <div class="color-picker">
+                ${['#B8E1FC','#C8E6D9','#E0D4F5','#FFE0B5','#FADADD','#B8F0E0','#F0D4F0','#FFF0B5','#D4E0F5'].map(c => `
+                    <div class="color-option ${c === '#B8E1FC' ? 'active' : ''}" 
+                         style="background:${c}" onclick="selectColor(this, '${c}')"></div>
+                `).join('')}
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="handleCreateCategory()">Создать</button>
+    `);
+}
+
+function selectColor(el, color) {
+    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    el.dataset.selectedColor = color;
+}
+
+async function handleCreateCategory() {
+    const name = document.getElementById('new-cat-name').value.trim();
+    const selected = document.querySelector('.color-option.active');
+    const color = selected ? selected.style.background : '#4A90D9';
+    if (!name) { showToast('Введите название'); return; }
+    await createCategory(name, color);
+    closeModal();
+}
+
+function showEditCategoryModal(categoryId) {
+    showModal(`
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">✏️ Редактировать категорию</div>
+        <div class="form-group">
+            <label>Название</label>
+            <input type="text" id="edit-cat-name" placeholder="Название">
+        </div>
+        <div class="form-group">
+            <label>Цвет</label>
+            <div class="color-picker">
+                ${['#B8E1FC','#C8E6D9','#E0D4F5','#FFE0B5','#FADADD','#B8F0E0','#F0D4F0','#FFF0B5','#D4E0F5'].map(c => `
+                    <div class="color-option" style="background:${c}" onclick="selectColor(this, '${c}')"></div>
+                `).join('')}
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="handleEditCategory('${categoryId}')">Сохранить</button>
+    `);
+}
+
+async function handleEditCategory(categoryId) {
+    const name = document.getElementById('edit-cat-name').value.trim();
+    const selected = document.querySelector('.color-option.active');
+    const color = selected ? selected.style.background : '#4A90D9';
+    if (!name) { showToast('Введите название'); return; }
+    await editCategory(categoryId, name, color);
+    closeModal();
+}
+
+// ============================================================
+// 5. ОТКРЫТИЕ КАТЕГОРИИ
+// ============================================================
+
+function openCategory(categoryId) {
+    currentCategoryId = categoryId;
+    switchTab('learn');
+    
+    const container = document.getElementById('learn-content');
+    container.innerHTML = `
+        <div class="category-header">
+            <span class="category-title">📖 Загрузка...</span>
+            <div class="category-actions">
+                <button class="btn btn-primary btn-sm" onclick="startFlashcards('${categoryId}')">🃏 Карточки</button>
+                <button class="btn btn-success btn-sm" onclick="startQuiz('${categoryId}')">📝 Тест</button>
+            </div>
+        </div>
+        <div id="mode-container" class="mode-fullscreen"></div>
+        <div id="words-list-container" class="words-list-container">
+            <div class="empty-state">
+                <div class="icon">⏳</div>
+                <div class="title">Загрузка слов...</div>
+            </div>
+        </div>
+    `;
+
+    // Загружаем слова
+    loadCategoryWords(categoryId);
+}
+
+async function loadCategoryWords(categoryId) {
+    const { data, error } = await supabase
+        .from('words')
+        .select('*')
+        .eq('category_id', categoryId);
+
+    if (error) {
+        console.error('Ошибка загрузки слов:', error);
+        return;
+    }
+
+    const words = data || [];
+    const cat = await supabase
+        .from('categories')
+        .select('name')
+        .eq('id', categoryId)
+        .single();
+
+    const categoryName = cat.data?.name || 'Категория';
+
+    const container = document.getElementById('learn-content');
+    const title = container.querySelector('.category-title');
+    if (title) title.textContent = `📖 ${categoryName}`;
+
+    const wordsContainer = document.getElementById('words-list-container');
+    if (words.length === 0) {
+        wordsContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📝</div>
+                <div class="title">В категории пока нет слов</div>
+                <p class="text-muted mt-8">Добавьте первое слово</p>
+            </div>
+        `;
+        return;
+    }
+
+    wordsContainer.innerHTML = `
+        <div class="flex-between mb-8">
+            <span style="font-weight:600; font-size:16px;">📖 Все слова (${words.length})</span>
+            <button class="btn btn-primary btn-sm" onclick="showAddWordModal('${categoryId}')">➕ Добавить</button>
+        </div>
+        <div id="words-list">
+            ${words.map((w, i) => `
+                <div class="word-item">
+                    <div class="word-info">
+                        <div class="word-original">
+                            ${w.original}
+                            <button class="speak-btn" onclick="speakWord('${w.original}')">🔊</button>
+                        </div>
+                        <div class="word-translation">${w.translation}</div>
+                        ${w.transcription ? `<div class="word-transcription">${w.transcription}</div>` : ''}
+                    </div>
+                    <div class="word-actions">
+                        <button class="edit-word" onclick="editWord('${categoryId}', '${w.id}')">✏️</button>
+                        <button class="delete-word" onclick="deleteWord('${categoryId}', '${w.id}')">✕</button>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// ============================================================
+// 6. КАРТОЧКИ
+// ============================================================
+
+async function startFlashcards(categoryId) {
+    const { data: words } = await supabase
+        .from('words')
+        .select('*')
+        .eq('category_id', categoryId);
+
+    if (!words || words.length === 0) {
+        showToast('❌ Нет слов для изучения');
+        return;
+    }
+
+    // Здесь будет логика карточек
+    showToast('🃏 Карточки — в разработке');
+}
+
+// ============================================================
+// 7. ТЕСТ
+// ============================================================
+
+async function startQuiz(categoryId) {
+    const { data: words } = await supabase
+        .from('words')
+        .select('*')
+        .eq('category_id', categoryId);
+
+    if (!words || words.length < 2) {
+        showToast('❌ Нужно минимум 2 слова для теста');
+        return;
+    }
+
+    // Здесь будет логика теста
+    showToast('📝 Тест — в разработке');
+}
+
+// ============================================================
+// 8. СПИСОК СЛОВ
+// ============================================================
+
+function showAddWordModal(categoryId) {
+    showModal(`
+        <button class="modal-close" onclick="closeModal()">✕</button>
+        <div class="modal-title">➕ Добавить слово</div>
+        <div class="form-group">
+            <label>Слово (на английском)</label>
+            <input type="text" id="new-word-original" placeholder="Например: cat">
+        </div>
+        <div class="form-group">
+            <label>Перевод</label>
+            <input type="text" id="new-word-translation" placeholder="Например: кошка">
+        </div>
+        <div class="form-group">
+            <label>Транскрипция (необязательно)</label>
+            <input type="text" id="new-word-transcription" placeholder="Например: [kæt]">
+        </div>
+        <button class="btn btn-primary" onclick="handleAddWord('${categoryId}')">Добавить</button>
+    `);
+}
+
+async function handleAddWord(categoryId) {
+    const original = document.getElementById('new-word-original').value.trim();
+    const translation = document.getElementById('new-word-translation').value.trim();
+    const transcription = document.getElementById('new-word-transcription').value.trim();
+
+    if (!original || !translation) {
+        showToast('❌ Заполните слово и перевод');
+        return;
+    }
+
+    const { error } = await supabase
+        .from('words')
+        .insert([{
+            category_id: categoryId,
+            original: original,
+            translation: translation,
+            transcription: transcription || ''
+        }]);
+
+    if (error) {
+        showToast('❌ Ошибка добавления: ' + error.message);
+        return;
+    }
+
+    showToast('✅ Слово добавлено');
+    closeModal();
+    loadCategoryWords(categoryId);
+}
+
+// ============================================================
+// 9. ПРОИЗНОШЕНИЕ
+// ============================================================
+
+function speakWord(text) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-US';
+    utterance.rate = 0.7;
+    window.speechSynthesis.speak(utterance);
+}
+
+// ============================================================
+// 10. ВКЛАДКИ
+// ============================================================
+
+function switchTab(tabName) {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
+
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.toggle('active', el.id === 'tab-' + tabName);
+    });
+
+    if (tabName === 'stats') {
+        renderStats();
+    }
+}
+
+// ============================================================
+// 11. СТАТИСТИКА
+// ============================================================
+
+async function renderStats() {
+    const container = document.getElementById('stats-content');
+    if (!currentUser) {
+        container.innerHTML = `<div class="empty-state"><div class="icon">🔒</div><div class="title">Войдите, чтобы видеть статистику</div></div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="stats-grid">
+            <div class="stats-item">
+                <div class="value">0</div>
+                <div class="label">Игр сыграно</div>
+            </div>
+            <div class="stats-item">
+                <div class="value">0%</div>
+                <div class="label">Средний результат</div>
+            </div>
+            <div class="stats-item">
+                <div class="value">0</div>
+                <div class="label">Всего баллов</div>
+            </div>
+        </div>
+        <div style="background:#fff; border-radius:16px; padding:16px; margin-top:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <strong>📋 Статистика собирается...</strong>
+            <p class="text-muted mt-8">Пройдите тесты, чтобы видеть прогресс</p>
+        </div>
+    `;
+}
+
+// ============================================================
+// 12. TOAST
+// ============================================================
+
+function showToast(message) {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.3s';
+        setTimeout(() => toast.remove(), 300);
+    }, 2500);
+}
+
+// ============================================================
+// 13. ЗАПУСК
+// ============================================================
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        switchTab(btn.dataset.tab);
+    });
+});
+
+// Проверяем сохранённого пользователя
+checkSavedUser().then(() => {
+    renderApp();
+});
+
+console.log('📚 Kids Words App готов!');
+</script>
+</body>
+</html>
