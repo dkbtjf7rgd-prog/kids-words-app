@@ -14,6 +14,7 @@
         .btn { display: inline-block; width: 100%; padding: 12px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 8px; }
         .btn-primary { background: #4A90D9; color: white; }
         .btn-outline { background: transparent; color: #4A90D9; border: 2px solid #4A90D9; }
+        .btn-success { background: #34C759; color: white; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
         .form-group input { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 16px; }
@@ -21,6 +22,7 @@
         .card .dot { width: 14px; height: 14px; border-radius: 50%; margin-right: 12px; flex-shrink: 0; }
         .card .name { flex: 1; font-weight: 600; }
         .card .count { font-size: 13px; color: #999; background: #f0f0f0; padding: 2px 10px; border-radius: 20px; }
+        .badge { font-size: 10px; background: #4A90D9; color: white; padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
         .hidden { display: none !important; }
         .text-center { text-align: center; }
         .avatar-selector { display: flex; gap: 12px; font-size: 28px; flex-wrap: wrap; }
@@ -128,9 +130,7 @@
                                                 }
                                             });
                                             const text = await response.text();
-                                            if (!text || text.trim() === '') {
-                                                return { data: null, error: null };
-                                            }
+                                            if (!text || text.trim() === '') return { data: null, error: null };
                                             const data = JSON.parse(text);
                                             if (response.ok) {
                                                 return { data: data.length ? data[0] : null, error: null };
@@ -151,9 +151,7 @@
                                                 }
                                             });
                                             const text = await response.text();
-                                            if (!text || text.trim() === '') {
-                                                return { data: null, error: null };
-                                            }
+                                            if (!text || text.trim() === '') return { data: null, error: null };
                                             const data = JSON.parse(text);
                                             if (response.ok && data.length) {
                                                 return { data: data[0], error: null };
@@ -178,9 +176,7 @@
                                                 }
                                             });
                                             const text = await response.text();
-                                            if (!text || text.trim() === '') {
-                                                return { data: null, error: null };
-                                            }
+                                            if (!text || text.trim() === '') return { data: null, error: null };
                                             const data = JSON.parse(text);
                                             if (response.ok) {
                                                 return { data: data.length ? data[0] : null, error: null };
@@ -201,9 +197,7 @@
                                                 }
                                             });
                                             const text = await response.text();
-                                            if (!text || text.trim() === '') {
-                                                return { data: null, error: null };
-                                            }
+                                            if (!text || text.trim() === '') return { data: null, error: null };
                                             const data = JSON.parse(text);
                                             if (response.ok && data.length) {
                                                 return { data: data[0], error: null };
@@ -257,9 +251,7 @@
                                                 body: JSON.stringify(data)
                                             });
                                             const text = await response.text();
-                                            if (!text || text.trim() === '') {
-                                                return { data: null, error: null };
-                                            }
+                                            if (!text || text.trim() === '') return { data: null, error: null };
                                             const result = JSON.parse(text);
                                             if (response.ok) {
                                                 return { data: result.length ? result[0] : result, error: null };
@@ -404,19 +396,16 @@
         let currentUser = null;
 
         async function registerUser(username, name, avatar) {
-            console.log('📝 Регистрация:', username);
             try {
-                // Проверяем, есть ли пользователь
                 const existing = await sb.from('users').select('id').eq('username', username).maybeSingle();
                 if (existing.data) {
                     showToast('❌ Пользователь с таким именем уже существует');
                     return false;
                 }
-                // Создаём нового пользователя
                 const result = await sb.from('users').insert([{ username, name, avatar }]).select().single();
                 if (result.error) {
-                    showToast('❌ Ошибка регистрации: ' + JSON.stringify(result.error));
-                    console.error('Детали ошибки:', result.error);
+                    showToast('❌ Ошибка регистрации');
+                    console.error(result.error);
                     return false;
                 }
                 currentUser = result.data;
@@ -425,16 +414,18 @@
                 showToast('✅ Добро пожаловать, ' + currentUser.name + '!');
                 return true;
             } catch (e) {
-                console.error('Исключение при регистрации:', e);
                 showToast('❌ Ошибка: ' + e.message);
                 return false;
             }
         }
 
         async function loginUser(username) {
-            console.log('🔑 Вход:', username);
             try {
-                const result = await sb.from('users').select('*').eq('username', username).single();
+                // Ищем по username, если нет — по name
+                let result = await sb.from('users').select('*').eq('username', username).single();
+                if (result.error || !result.data) {
+                    result = await sb.from('users').select('*').eq('name', username).single();
+                }
                 if (result.error || !result.data) {
                     showToast('❌ Пользователь не найден');
                     return false;
@@ -445,7 +436,6 @@
                 showToast('👋 Привет, ' + currentUser.name + '!');
                 return true;
             } catch (e) {
-                console.error('Ошибка входа:', e);
                 showToast('❌ Ошибка: ' + e.message);
                 return false;
             }
@@ -469,7 +459,6 @@
                 }
                 return false;
             } catch (e) {
-                console.error('Ошибка проверки:', e);
                 return false;
             }
         }
@@ -490,14 +479,12 @@
         }
 
         function handleLogin() {
-            console.log('✅ Кнопка "Войти" нажата');
             const username = document.getElementById('login-username').value.trim();
             if (!username) { showToast('Введите имя пользователя'); return; }
             loginUser(username);
         }
 
         function handleRegister() {
-            console.log('✅ Кнопка "Создать аккаунт" нажата');
             const username = document.getElementById('reg-username').value.trim();
             const name = document.getElementById('reg-name').value.trim();
             const avatar = document.getElementById('reg-avatar').value;
@@ -525,12 +512,15 @@
         }
 
         // ============================================================
-        // 3. CATEGORIES
+        // 3. CATEGORIES (показываем свои + публичные)
         // ============================================================
         async function loadCategories() {
             if (!currentUser) return;
             try {
-                const result = await sb.from('categories').select('*, words(*)').or(`user_id.eq.${currentUser.id},is_public.eq.true`);
+                const result = await sb.from('categories')
+                    .select('*, words(*)')
+                    .or(`user_id.eq.${currentUser.id},is_public.eq.true`)
+                    .then();
                 if (result.error) {
                     console.error('Ошибка загрузки категорий:', result.error);
                     return;
@@ -547,12 +537,13 @@
                             <span class="dot" style="background:${cat.color || '#4A90D9'};"></span>
                             <span class="name">${cat.name}</span>
                             <span class="count">${cat.words ? cat.words.length : 0}</span>
+                            ${cat.user_id === currentUser.id ? '<span class="badge">Моя</span>' : '<span class="badge" style="background: #888;">Общая</span>'}
                         </div>
-                        <button onclick="deleteCategory('${cat.id}')" style="background:none; border:none; color:#ff6b6b; font-size:18px; cursor:pointer;">✕</button>
+                        ${cat.user_id === currentUser.id ? `<button onclick="deleteCategory('${cat.id}')" style="background:none; border:none; color:#ff6b6b; font-size:18px; cursor:pointer;">✕</button>` : ''}
                     </div>
                 `).join('');
             } catch (e) {
-                console.error('Ошибка загрузки категорий:', e);
+                console.error(e);
             }
         }
 
@@ -569,11 +560,14 @@
                     is_public: false
                 }]).select().single();
                 if (result.error) {
-                    showToast('❌ Ошибка: ' + JSON.stringify(result.error));
+                    showToast('❌ Ошибка создания: ' + JSON.stringify(result.error));
+                    console.error(result.error);
                     return;
                 }
-                showToast('✅ Категория создана');
+                showToast('✅ Категория создана!');
                 loadCategories();
+                // Показываем кнопки для добавления слов
+                setTimeout(() => showAddWordModal(result.data.id), 300);
             } catch (e) {
                 showToast('❌ Ошибка: ' + e.message);
             }
@@ -584,7 +578,7 @@
             try {
                 const result = await sb.from('categories').delete().eq('id', id);
                 if (result.error) {
-                    showToast('❌ Ошибка: ' + JSON.stringify(result.error));
+                    showToast('❌ Ошибка удаления');
                     return;
                 }
                 showToast('🗑️ Категория удалена');
@@ -595,7 +589,31 @@
         }
 
         // ============================================================
-        // 5. MODAL
+        // 5. WORDS
+        // ============================================================
+        async function addWord(categoryId, original, translation, transcription) {
+            if (!currentUser) return;
+            try {
+                const result = await sb.from('words').insert([{
+                    category_id: categoryId,
+                    original: original,
+                    translation: translation,
+                    transcription: transcription || ''
+                }]).select().single();
+                if (result.error) {
+                    showToast('❌ Ошибка добавления слова');
+                    console.error(result.error);
+                    return;
+                }
+                showToast('✅ Слово добавлено!');
+                loadCategories();
+            } catch (e) {
+                showToast('❌ Ошибка: ' + e.message);
+            }
+        }
+
+        // ============================================================
+        // 6. MODAL
         // ============================================================
         function showModal(html) {
             document.getElementById('modal-body').innerHTML = html;
@@ -624,8 +642,72 @@
             closeModal();
         }
 
+        function showAddWordModal(categoryId) {
+            showModal(`
+                <button class="modal-close" onclick="closeModal()">✕</button>
+                <h3 style="text-align:center; margin-bottom:16px;">➕ Добавить слово в категорию</h3>
+                <div class="form-group">
+                    <label>Слово (на английском)</label>
+                    <input type="text" id="new-word-original" placeholder="cat">
+                </div>
+                <div class="form-group">
+                    <label>Перевод</label>
+                    <input type="text" id="new-word-translation" placeholder="кошка">
+                </div>
+                <div class="form-group">
+                    <label>Транскрипция (необязательно)</label>
+                    <input type="text" id="new-word-transcription" placeholder="[kæt]">
+                </div>
+                <button class="btn btn-success" onclick="handleAddWord('${categoryId}')">Добавить слово</button>
+                <button class="btn btn-outline mt-8" onclick="closeModal(); showImportWordsModal('${categoryId}')">📤 Загрузить списком</button>
+            `);
+        }
+
+        function handleAddWord(categoryId) {
+            const original = document.getElementById('new-word-original').value.trim();
+            const translation = document.getElementById('new-word-translation').value.trim();
+            const transcription = document.getElementById('new-word-transcription').value.trim();
+            if (!original || !translation) { showToast('Заполните слово и перевод'); return; }
+            addWord(categoryId, original, translation, transcription);
+            closeModal();
+        }
+
+        function showImportWordsModal(categoryId) {
+            showModal(`
+                <button class="modal-close" onclick="closeModal()">✕</button>
+                <h3 style="text-align:center; margin-bottom:16px;">📤 Загрузка слов списком</h3>
+                <p class="text-center">Введите слова в формате:</p>
+                <p class="text-center" style="background:#f0f0f0; padding:8px; border-radius:8px; font-size:14px;">cat, кошка, [kæt]</p>
+                <div class="form-group">
+                    <label>Список слов (каждое с новой строки)</label>
+                    <textarea id="import-words-text" rows="6" style="width:100%; padding:12px; border:2px solid #e0e0e0; border-radius:12px; font-size:14px; font-family:inherit;"></textarea>
+                </div>
+                <button class="btn btn-success" onclick="handleImportWords('${categoryId}')">Импортировать</button>
+            `);
+        }
+
+        async function handleImportWords(categoryId) {
+            const text = document.getElementById('import-words-text').value;
+            if (!text.trim()) { showToast('Введите хотя бы одно слово'); return; }
+            const lines = text.split('\n').filter(line => line.trim());
+            let count = 0;
+            for (const line of lines) {
+                const parts = line.split(',').map(s => s.trim());
+                if (parts.length < 2) continue;
+                const original = parts[0];
+                const translation = parts[1];
+                const transcription = parts[2] || '';
+                if (original && translation) {
+                    await addWord(categoryId, original, translation, transcription);
+                    count++;
+                }
+            }
+            closeModal();
+            showToast(`✅ Импортировано ${count} слов`);
+        }
+
         // ============================================================
-        // 6. TOAST
+        // 7. TOAST
         // ============================================================
         function showToast(message) {
             const existing = document.querySelector('.toast');
@@ -642,12 +724,10 @@
         }
 
         // ============================================================
-        // 7. INIT
+        // 8. INIT
         // ============================================================
-        checkSavedUser().then(() => {
-            renderApp();
-            console.log('✅ Kids Words App готов!');
-        });
+        checkSavedUser().then(() => renderApp());
+        console.log('✅ Kids Words App готов!');
     </script>
 </body>
 </html>
