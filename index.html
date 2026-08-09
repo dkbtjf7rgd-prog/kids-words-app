@@ -141,7 +141,7 @@ Resources:`;for(let t of c){if(!t||typeof t!=`string`)throw Error(`@supabase/aut
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcGh2ZnRramdzY2xjcXBrZWdkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYwOTkzOTMsImV4cCI6MjEwMTY3NTM5M30.0QvBp9g56UQ5R_5qoS6FlMsHSkPh-rEzO2TfB7DPNmk';
         // ============================================================
 
-        const sb = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentUser = null;
         let currentProfile = null;
 
