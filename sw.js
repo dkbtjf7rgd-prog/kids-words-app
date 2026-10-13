@@ -1,57 +1,39 @@
-const CACHE_NAME = 'kids-words-v2';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-];
+// Kids Words — service worker.
+// Страница всегда берётся из сети (чтобы обновления с GitHub сразу доходили до телефона),
+// а сохранённая копия используется только без интернета.
+const CACHE_NAME = 'kids-words-v3';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
-// Установка SW
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
-  );
+  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)).catch(() => {}));
   self.skipWaiting();
 });
 
-// Активация и очистка старого кэша
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      );
-    })
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))))
   );
   self.clients.claim();
 });
 
-// Перехват запросов
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  const req = event.request;
+  const url = new URL(req.url);
+  // Внешние запросы (база, перевод, словарь, шрифты) не трогаем
+  if (req.method !== 'GET' || url.origin !== location.origin) return;
 
-  // 1. ИГНОРИРУЕМ внешние запросы (API, CDN)
-  if (url.origin !== location.origin) {
-    return;
-  }
-
-  // 2. ИГНОРИРУЕМ запросы к API Supabase
-  if (url.pathname.startsWith('/rest/v1') || url.pathname.startsWith('/auth/v1')) {
-    return;
-  }
-
-  // 3. Стратегия "Cache First" для статики
+  // Сначала сеть, при ошибке — копия из кэша
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request).catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+    fetch(req)
+      .then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, copy));
         }
-      });
-    })
+        return res;
+      })
+      .catch(() =>
+        caches.match(req).then((cached) => cached || (req.mode === 'navigate' ? caches.match('./index.html') : undefined))
+      )
   );
 });
