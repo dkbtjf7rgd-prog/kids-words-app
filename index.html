@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Таблица умножения</title>
+<title>Kids Words</title>
 <meta name="theme-color" content="#2F5BEA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Умножение">
+<meta name="apple-mobile-web-app-title" content="Kids Words">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=1">
-<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=2">
+<link rel="icon" href="icon-192.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Nunito:wght@400;600;700;800&family=Noto+Sans:wght@400;500&display=swap">
 <style>
-
 /* Layout: one narrow column like a school notebook page on squared paper; app screens swap in place */
 :root{
 --paper:#F5F7FC; --grid:rgba(29,42,91,.06); --card:#FFFFFF; --ink:#1D2A5B; --muted:#5D678A; --line:#DCE1EE;
@@ -196,424 +195,593 @@ body{margin:0}
 .sync.wait .dot{background:var(--sun)}
 .sync.err .dot{background:var(--bad)}
 .why{font-size:.75rem;color:var(--muted);overflow-wrap:anywhere}
-/* math additions */
-.tables{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.tbl{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border-radius:14px;background:var(--card);box-shadow:var(--shadow);border:2px solid transparent;font-family:var(--f-display);font-weight:700;font-size:1.25rem}
-.tbl[aria-pressed="true"]{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
-.tbl .bar{width:80%;height:6px}
-.seg{display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-radius:14px;padding:4px;box-shadow:var(--shadow);gap:2px}
-.seg button{padding:10px 4px;border-radius:10px;font-weight:800;color:var(--muted)}
-.seg button[aria-pressed="true"]{background:var(--primary);color:var(--primary-ink)}
-.mode .mi.txt{font-family:var(--f-display);font-weight:700;font-size:.95rem}
-.links{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.expr{font-family:var(--f-display);font-weight:700;font-size:clamp(2.2rem,11vw,3.4rem);line-height:1.1;display:flex;gap:.28em;align-items:center;justify-content:center;flex-wrap:wrap}
-.expr .gap{min-width:1.3em;padding:0 .15em;border-radius:12px;background:var(--primary-soft);color:var(--primary);text-align:center}
-.expr .op{color:var(--muted)}
-.typed{font-family:var(--f-display);font-weight:700;font-size:2rem;text-align:center;min-height:62px;border:2px solid var(--line);background:var(--card);border-radius:16px;display:grid;place-items:center}
-.typed.ok{border-color:var(--good);background:var(--good-soft);color:var(--good)}
-.typed.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
-.typed .ph{color:var(--muted);font-family:var(--f-body);font-size:1rem;font-weight:700}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.key{min-height:58px;border-radius:14px;background:var(--card);box-shadow:var(--shadow);font-family:var(--f-display);font-weight:700;font-size:1.5rem}
-.key:active{transform:scale(.96)}
-.key.go{background:var(--primary);color:var(--primary-ink);font-family:var(--f-body);font-size:1.05rem;font-weight:800}
-.key.del{color:var(--muted);font-size:1.2rem}
-.opts.two{grid-template-columns:1fr 1fr}
-.opts.grid4{grid-template-columns:1fr 1fr}
-.opt.big{font-family:var(--f-display);font-size:1.6rem;min-height:68px}
-.why2{font-size:.95rem;color:var(--ink);font-weight:600}
-.timer{font-family:var(--f-display);font-weight:700;color:var(--primary);min-width:3ch;text-align:center}
-.timer.low{color:var(--bad)}
-.ltable{display:flex;flex-direction:column;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
-.lrow{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:10px 16px;border-top:1px solid var(--line);font-family:var(--f-display);font-weight:700;font-size:1.35rem;text-align:left}
-.lrow:first-child{border-top:0}
-.lrow .ans{min-width:2.4em;text-align:center;border-radius:10px;padding:2px 8px;background:var(--primary-soft);color:var(--primary)}
-.lrow .ans.open{background:var(--good-soft);color:var(--good)}
-.heat{display:grid;grid-template-columns:28px repeat(10,1fr);gap:3px;font-size:.78rem;font-weight:800;text-align:center}
-.heat span{display:grid;place-items:center;aspect-ratio:1;border-radius:6px;min-width:0}
-.heat .h{color:var(--muted);background:none}
-.heat .s0{background:var(--line)}
-.heat .s1{background:var(--bad-soft);color:var(--bad)}
-.heat .s2{background:var(--sun-soft);color:var(--sun-ink)}
-.heat .s3{background:var(--good);color:#fff}
-.heat .sx{background:var(--line);opacity:.5}
-.keyrow{display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);align-items:center}
-.keyrow i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-2px}
-.mist{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-weight:700;text-align:left;width:100%}
-.mist .bad{color:var(--bad);text-decoration:line-through}
 </style></head><body>
-<div class="app" id="app"><div class="loading"><div class="spinner"></div><p>Открываю…</p></div></div>
+<div class="app" id="app"><div class="loading"><div class="spinner"></div><p>Открываю словарик…</p></div></div>
 <div class="toast" id="toast" hidden></div>
 <script>
 (function(){
 "use strict";
+/* ---------- icons ---------- */
 const I = {
+speak:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5v5h3.5L12 19V5L7.5 9.5z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>',
 back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
 close:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
 star:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.8l2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17.1 6.3 20.1l1.2-6.3L2.9 9.4l6.3-.8z"/></svg>',
 coin:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="var(--sun)"/><path d="M12 6.5l1.7 3.5 3.8.5-2.8 2.7.7 3.8L12 15.2 8.6 17l.7-3.8-2.8-2.7 3.8-.5z" fill="var(--card)"/></svg>',
-del:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11v12H9l-5-6z"/><path d="M12.5 9.5l5 5M17.5 9.5l-5 5"/></svg>'
+pick:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 12.5l2.5 2.5 4.5-5"/></svg>',
+find:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>',
+pen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16M6 16l9-9 3 3-9 9H6z"/></svg>',
+mix:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h3l10 10h3M4 17h3l3-3M14 10l3-3h3M18 4l2 3-2 3M18 14l2 3-2 3"/></svg>'
 };
+/* ---------- helpers ---------- */
 const $app = document.getElementById('app');
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 const clone = o => JSON.parse(JSON.stringify(o));
-const rnd = n => Math.floor(Math.random()*n);
-const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=rnd(i+1); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const dayKey = (d=new Date()) => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const plural = (n,a,b,c) => { const m10=n%10,m100=n%100; return (m10===1&&m100!==11)?a:(m10>=2&&m10<=4&&(m100<12||m100>14))?b:c; };
+const norm = s => String(s||'').toLowerCase().replace(/[’']/g,"'").replace(/[^a-zа-яё' -]/g,'').replace(/\s+/g,' ').trim();
+const CYR = /[а-яё]/i;
+const COLORS = ['--c1','--c2','--c3','--c4','--c5','--c6'];
+const plural = (n, a, b, c) => { const m10=n%10, m100=n%100; return (m10===1&&m100!==11)?a:(m10>=2&&m10<=4&&(m100<12||m100>14))?b:c; };
 let toastT;
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,3000); }
-async function fetchT(url, opts, ms){ const c=new AbortController(); const t=setTimeout(()=>c.abort(),ms); try{ return await fetch(url,Object.assign({},opts||{},{signal:c.signal})); } finally{ clearTimeout(t); } }
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true, 3200); }
+async function fetchT(url, opts, ms){
+const c = new AbortController(); const t = setTimeout(()=>c.abort(), ms);
+try{ return await fetch(url, Object.assign({}, opts||{}, { signal:c.signal })); } finally { clearTimeout(t); }
+}
+/* ---------- speech: recorded audio from the dictionary, phone voice as fallback ---------- */
+function pickVoice(){ try{ const vs=speechSynthesis.getVoices(); return vs.find(v=>/en[-_]GB/i.test(v.lang)) || vs.find(v=>/^en/i.test(v.lang)) || null; }catch(e){ return null; } }
+function tts(text){
+try{ const s=window.speechSynthesis; if(!s) return toast('Этот браузер не умеет озвучивать слова');
+s.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; const v=pickVoice(); if(v) u.voice=v; u.rate=.82; s.speak(u);
+}catch(e){ toast('Не получилось включить звук'); }
+}
+let player = null;
+function speak(text){
+const w = findWord(text);
+if (w && w.au){
+try{
+if (player) player.pause();
+player = new Audio(w.au);
+let done = false;
+const fallback = () => { if (!done){ done = true; tts(text); } };
+const guard = setTimeout(() => { if (player && player.paused){ player.pause(); fallback(); } }, 2500);
+player.addEventListener('playing', () => { done = true; clearTimeout(guard); }, { once:true });
+player.addEventListener('error', () => { clearTimeout(guard); fallback(); }, { once:true });
+const p = player.play(); if (p && p.catch) p.catch(() => { clearTimeout(guard); fallback(); });
+return;
+}catch(e){}
+}
+tts(text);
+}
+function findWord(text){ for (const c of Object.values(data.cats)) for (const w of (c.words||[])) if (w.en === text) return w; return null; }
+try{ speechSynthesis.getVoices(); }catch(e){}
 
-/* ---------- storage: phone first, then Yandex Cloud (same function as the words app) ---------- */
+/* ---------- storage: phone first, then Yandex Cloud function ---------- */
+/* Всё сразу пишется в память телефона и в очередь. Очередь отправляется в облако, когда есть связь. */
 const API = 'https://functions.yandexcloud.net/d4eo3didq423t3df7lmq';
 const APP_KEY = 'kw-7f3k9q2m8x4p';
-const LS = 'mult-v1', LSP = 'mult-pending';
-const fresh = () => ({ points:0, days:{}, facts:{}, sessions:[], tables:[2,3,4,5,6,7,8,9], ops:'both', updatedAt:0 });
-let st = fresh();
-let pending = false, flushing = false, syncErr = false, lastErr = '', ready = false;
+const data = { cats:{}, progress:{} };
+let ready = false;
+const DEL = {};
+let queue = {};
+let flushing = false, syncErr = false, lastErr = '';
+
 async function api(op, extra, ms){
-const r = await fetchT(API, { method:'POST', cache:'no-store', headers:{'Content-Type':'text/plain;charset=UTF-8'}, body:JSON.stringify(Object.assign({key:APP_KEY, op}, extra||{})) }, ms||10000);
-let j=null; try{ j=await r.json(); }catch(e){}
-if (!r.ok) throw new Error((j&&j.error)||('HTTP '+r.status));
+const r = await fetchT(API, {
+method:'POST', cache:'no-store',
+headers:{ 'Content-Type':'text/plain;charset=UTF-8' },
+body: JSON.stringify(Object.assign({ key:APP_KEY, op }, extra||{}))
+}, ms || 10000);
+let j = null; try{ j = await r.json(); }catch(e){}
+if (!r.ok) throw new Error((j && j.error) || ('HTTP ' + r.status));
 return j;
 }
-const errMsg = e => e && e.name==='AbortError' ? 'облако не ответило вовремя' : String((e&&e.message)||e);
-function loadLocal(){ try{ const raw=localStorage.getItem(LS); if(raw){ st=Object.assign(fresh(), JSON.parse(raw)); } pending = localStorage.getItem(LSP)==='1'; return !!raw; }catch(e){ return false; } }
-function saveLocal(){ try{ localStorage.setItem(LS, JSON.stringify(st)); localStorage.setItem(LSP, pending?'1':'0'); }catch(e){} }
-function commit(){ st.updatedAt = Date.now(); pending = true; saveLocal(); setSync(); flush(); }
+function loadQueue(){ try{ queue = JSON.parse(localStorage.getItem('slovarik-queue') || '{}') || {}; }catch(e){ queue = {}; } }
+function saveQueue(){ try{ localStorage.setItem('slovarik-queue', JSON.stringify(queue)); }catch(e){} }
+function loadLocal(){ try{ const raw=localStorage.getItem('slovarik-v1'); if(raw){ const d=JSON.parse(raw); data.cats=d.cats||{}; data.progress=d.progress||{}; return true; } }catch(e){} return false; }
+function saveLocal(){ try{ localStorage.setItem('slovarik-v1', JSON.stringify(data)); }catch(e){} }
+const pendingCount = () => Object.keys(queue).length;
+
+function save(col, id, body){
+if (body === DEL) delete data[col][id]; else data[col][id] = body;
+saveLocal();
+queue[col + '/' + id] = body === DEL ? null : clone(body);
+saveQueue(); setSync();
+flush();
+}
 async function flush(){
-if (flushing || !pending) return;
+if (flushing) return;
 flushing = true; setSync();
 try{
-const snap = clone(st);
-await api('save', { col:'mult', id:'state', data:snap });
-if (st.updatedAt === snap.updatedAt){ pending = false; saveLocal(); }
+for (;;){
+const keys = Object.keys(queue); if (!keys.length) break;
+const k = keys[0], body = queue[k], i = k.indexOf('/');
+await api('save', { col:k.slice(0,i), id:k.slice(i+1), data:body });
+if (queue[k] === body){ delete queue[k]; saveQueue(); }
+}
 syncErr = false; lastErr = '';
-}catch(e){ syncErr = true; lastErr = errMsg(e); }
+}catch(e){ syncErr = true; lastErr = e && e.name === 'AbortError' ? 'облако не ответило вовремя' : String((e && e.message) || e); }
 flushing = false; setSync();
-if (pending && !syncErr) flush();
-}
-async function pull(){
-try{
-if (pending) await flush();
-const d = await api('getData', {}, 12000);
-const s = d && d.mult && d.mult.state;
-if (!pending){
-if (s){ st = Object.assign(fresh(), s); saveLocal(); }
-else if (st.updatedAt){ pending = true; saveLocal(); flush(); }
-}
-syncErr = false; lastErr = '';
-}catch(e){ syncErr = true; lastErr = errMsg(e); }
-ready = true; if (S.view!=='quiz') render(); setSync();
 }
 function syncLabel(){
-if (syncErr && pending) return 'Сохранено на телефоне. В облако уйдёт, когда будет связь';
-if (pending || flushing) return 'Сохраняю…';
+const n = pendingCount();
+if (syncErr && n) return 'Сохранено на телефоне. В облако уйдёт, когда будет связь';
+if (n || flushing) return 'Сохраняю…';
 if (syncErr) return 'Нет связи с облаком. Работаю с данными на телефоне';
 return 'Сохранено';
 }
-function setSync(){ const el=document.getElementById('sync'); if(!el) return; el.className='sync'+(syncErr?' err':(pending||flushing)?' wait':''); el.lastChild.textContent=syncLabel(); }
-document.addEventListener('visibilitychange', () => { if (document.visibilityState==='visible' && S.view!=='quiz') pull(); });
-window.addEventListener('online', () => flush());
-setInterval(() => { if (pending) flush(); }, 20000);
+function setSync(){ const el=document.getElementById('sync'); if(!el) return; el.className='sync'+(syncErr?' err':(pendingCount()||flushing)?' wait':''); el.lastChild.textContent = syncLabel(); }
 
-/* ---------- facts ---------- */
-/* m-a-b : a × b (таблица на a);  d-a-b : (a·b) ÷ a = b */
-const TABLES = [1,2,3,4,5,6,7,8,9,10];
-const fkey = (op,a,b) => op+'-'+a+'-'+b;
-function stars(k){ const s = st.facts[k]; if (!s) return 0; return Math.max(0, Math.min(3, s.r - s.w)); }
-function tableMastery(a){ let ok=0, n=0; const ops = st.ops==='m'?['m']:st.ops==='d'?['d']:['m','d'];
-for (const op of ops) for (let b=1;b<=10;b++){ n++; if (stars(fkey(op,a,b))>=3) ok++; } return n?ok/n:0; }
-function allFacts(tables, ops){ const out=[]; for (const a of tables) for (const op of ops) for (let b=1;b<=10;b++) out.push({op,a,b,k:fkey(op,a,b)}); return out; }
-const opsOf = o => o==='m'?['m']:o==='d'?['d']:['m','d'];
-function pickWeighted(list, n){
-const res=[]; let pool=list.slice(); let last='';
-while (res.length < n && list.length){
-if (!pool.length) pool=list.slice();
-let tot=0; const w=pool.map(f=>{ const x=(4-stars(f.k))**2 + ((st.facts[f.k]||{}).w||0)*0.5; tot+=x; return x; });
-let r=Math.random()*tot, i=0; while (r>w[i] && i<w.length-1){ r-=w[i]; i++; }
-if (pool[i].k===last && pool.length>1){ i=(i+1)%pool.length; }
-res.push(pool[i]); last=pool[i].k; pool.splice(i,1);
-}
-return res;
-}
-function distractors(ans, f, want){
-const c = new Set();
-const {op,a,b} = f;
-if (op==='m'){ [a*(b+1),a*(b-1),(a+1)*b,(a-1)*b,ans+1,ans-1,ans+10,ans-10,(a+1)*(b+1)].forEach(x=>c.add(x));
-const s=String(ans); if (s.length===2 && s[0]!==s[1]) c.add(+(s[1]+s[0])); }
-else { [ans+1,ans-1,ans+2,ans-2,a,ans*2].forEach(x=>c.add(x)); }
-c.delete(ans);
-let arr = shuffle([...c].filter(x=>x>0 && x<=110));
-while (arr.length < want){ const x = ans + rnd(9) - 4; if (x>0 && x!==ans && !arr.includes(x)) arr.push(x); }
-return arr.slice(0,want);
-}
-/* item: parts = array of tokens; hole = index of hidden token */
-function makeItem(f, kind){
-const {op,a,b} = f;
-let parts, hole, ans, why;
-if (op==='m'){
-const sw = Math.random()<.5; const x = sw?b:a, y = sw?a:b;
-parts = [x,'×',y,'=',a*b];
-why = `${x} × ${y} = ${a*b}`;
-if (kind==='missing'){ hole = Math.random()<.5?0:2; } else hole = 4;
+let pulling = false;
+async function pull(){
+if (pulling) return; pulling = true;
+try{
+if (pendingCount()) await flush();
+const d = await api('getData', {}, 12000);
+const serverEmpty = !Object.keys(d.cats||{}).length && !Object.keys(d.progress||{}).length;
+if (serverEmpty && Object.keys(data.cats).length){
+/* облако пустое, а на телефоне есть слова: переносим их в облако */
+for (const [id,c] of Object.entries(data.cats)) queue['cats/' + id] = c;
+for (const [id,p] of Object.entries(data.progress)) queue['progress/' + id] = p;
+saveQueue(); flush();
 } else {
-parts = [a*b,'÷',a,'=',b];
-why = `${a*b} ÷ ${a} = ${b}, потому что ${a} × ${b} = ${a*b}`;
-if (kind==='missing'){ hole = Math.random()<.5?0:2; } else hole = 4;
+data.cats = d.cats || {}; data.progress = d.progress || {};
+for (const k of Object.keys(queue)){ const i = k.indexOf('/'), col = k.slice(0,i), id = k.slice(i+1);
+if (!data[col]) continue;
+if (queue[k] === null) delete data[col][id]; else data[col][id] = queue[k]; }
+saveLocal();
 }
-ans = parts[hole];
-const it = { k:f.k, op, a, b, kind, parts, hole, ans, why };
-if (kind==='choose') it.opts = shuffle([ans, ...distractors(ans, f, 3)]);
-if (kind==='tf'){ it.truth = Math.random()<.5; it.shown = it.truth ? ans : distractors(ans,f,1)[0]; }
-return it;
+if (!Object.keys(data.cats).length) seedExample();
+syncErr = false; lastErr = '';
+}catch(e){
+syncErr = true; lastErr = e && e.name === 'AbortError' ? 'облако не ответило вовремя' : String((e && e.message) || e);
 }
-const KINDS = { choose:10, input:15, missing:15, tf:5, blitz:5 };
-const MODES = {
-choose: { t:'Выбери ответ', d:'Четыре варианта, один верный', pts:'+10', mi:'?' },
-input: { t:'Посчитай сам', d:'Набери ответ на кнопках', pts:'+15', mi:'123' },
-missing:{ t:'Найди пропуск', d:'7 × ? = 56 и ? ÷ 8 = 6', pts:'+15', mi:'□' },
-tf: { t:'Верно или нет?', d:'Реши, правильно ли записан пример', pts:'+5', mi:'✓✗' },
-mix: { t:'Всё вперемешку', d:'Задания всех видов подряд', pts:'+5…15', mi:'★' },
-blitz: { t:'Блиц на минуту', d:'Сколько успеешь за 60 секунд', pts:'+5', mi:'60' }
-};
-/* ---------- UI ---------- */
-const S = { view:'home', learnT:7, learnOp:'m', open:{}, q:null, statOp:'m' };
-const coins = n => `<span class="coins num">${I.coin}<span>${n}</span></span>`;
+pulling = false; ready = true; refresh(); setSync();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') pull(); });
+window.addEventListener('online', () => flush());
+setInterval(() => { if (pendingCount() && navigator.onLine !== false) flush(); }, 20000);
+
+/* ---------- model helpers ---------- */
+const cats = () => Object.entries(data.cats).map(([id,c])=>({id,...c})).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+const cat = id => data.cats[id] ? { id, ...data.cats[id] } : null;
+function prog(id){ const p = data.progress[id]; return p ? p : { points:0, words:{}, days:{}, sessions:[] }; }
+function stars(p, wid){ const s = p.words && p.words[wid]; if(!s) return 0; return Math.max(0, Math.min(3, s.r - s.w)); }
+function mastered(c){ const p=prog(c.id); return (c.words||[]).filter(w=>stars(p,w.id)>=3).length; }
+function totalPoints(){ return Object.values(data.progress).reduce((s,p)=>s+(p.points||0),0); }
+function todayPoints(){ const k=dayKey(); return Object.values(data.progress).reduce((s,p)=>s+((p.days||{})[k]||0),0); }
+const usable = c => (c.words||[]).filter(w => w.en && w.ru && !w.pend);
+/* ---------- UI state ---------- */
+const S = { view:'home', catId:null, tab:'words', newCat:false, newColor:0, draft:'', busy:false, addNote:null, fresh:[], editId:null, manual:false, confirm:null, learnIdx:0, learnShow:false, learnOrder:null, quiz:null };
+let dirty = false;
+function refresh(){
+const a = document.activeElement;
+if (a && /INPUT|TEXTAREA/.test(a.tagName) && $app.contains(a)){ dirty = true; return; }
+if (S.view === 'quiz') return;
+render();
+}
+document.addEventListener('focusout', () => { setTimeout(()=>{ if (dirty){ dirty=false; refresh(); } }, 50); });
+/* ---------- rendering ---------- */
 function render(){
-if (!ready){ return; }
-const v = S.view;
-$app.innerHTML = v==='home'?viewHome() : v==='learn'?viewLearn() : v==='quiz'?viewQuiz() : v==='result'?viewResult() : viewStats();
+if (!ready){ $app.innerHTML = '<div class="loading"><div class="spinner"></div><p>Открываю словарик…</p></div>'; return; }
+if (S.view === 'cat' && !cat(S.catId)) S.view = 'home';
+if ((S.view === 'quiz' || S.view === 'result') && (!S.quiz || !cat(S.quiz.catId))) S.view = 'home';
+const html = S.view === 'home' ? viewHome() : S.view === 'cat' ? viewCat() : S.view === 'quiz' ? viewQuiz() : S.view === 'result' ? viewResult() : '';
+$app.innerHTML = html;
+const auto = $app.querySelector('[data-autofocus]'); if (auto) auto.focus();
 }
-function todayPts(){ return (st.days||{})[dayKey()]||0; }
+const coins = n => `<span class="coins num">${I.coin}<span>${n}</span></span>`;
+const starRow = n => `<span class="stars" aria-label="${n} из 3">${[0,1,2].map(i=>`<span class="${i<n?'on':''}">${I.star}</span>`).join('')}</span>`;
+const badge = (c, cls='badge') => `<span class="${cls}" style="background:var(${COLORS[c.color||0]})">${esc((c.name||'?').trim().charAt(0).toUpperCase())}</span>`;
 function viewHome(){
-const ops = opsOf(st.ops);
-const total = allFacts(TABLES, ops).length, learned = allFacts(TABLES, ops).filter(f=>stars(f.k)>=3).length;
-let h = `<header class="top"><div class="brand"><i>×÷</i>Таблица умножения</div>${coins(st.points||0)}</header>
-<section class="hello"><h1>Тренируемся!</h1><div class="today">
-<span class="chip num">Сегодня: +${todayPts()} ${plural(todayPts(),'балл','балла','баллов')}</span>
-<span class="chip num">Выучено ${learned} из ${total}</span></div></section>
-<section class="panel"><div><h2>Какие таблицы</h2><p class="muted" style="font-size:.9rem">Нажми на числа, которые хочешь тренировать. Полоска показывает, насколько таблица выучена.</p></div>
-<div class="tables">${TABLES.map(t=>`<button class="tbl" data-act="tbl" data-t="${t}" aria-pressed="${st.tables.includes(t)}"><span class="num">${t}</span><span class="bar"><span style="width:${Math.round(tableMastery(t)*100)}%"></span></span></button>`).join('')}</div>
-<div class="row" style="gap:6px"><button class="btn plain" data-act="tblall">Все</button><button class="btn plain" data-act="tbl29">От 2 до 9</button><button class="btn plain" data-act="tblnone">Сбросить</button></div>
-<span class="label">Что решаем</span>
-<div class="seg">${[['m','×  Умножение'],['d','÷  Деление'],['both','× ÷ Всё']].map(([k,t])=>`<button data-act="ops" data-o="${k}" aria-pressed="${st.ops===k}">${t}</button>`).join('')}</div></section>
-<div class="modes">${Object.entries(MODES).map(([k,m])=>`<button class="mode" data-act="start" data-mode="${k}" ${st.tables.length?'':'disabled'}><span class="mi txt">${m.mi}</span><b>${m.t}</b><span>${m.d}</span><em>${m.pts} за ответ</em></button>`).join('')}</div>
-${st.tables.length?'':'<p class="note">Выбери хотя бы одну таблицу, чтобы начать.</p>'}
-<div class="links"><button class="btn ghost" data-act="learn">Учить таблицу</button><button class="btn ghost" data-act="stats">Мой прогресс</button></div>
-<p class="sync ${syncErr?'err':(pending||flushing)?'wait':''}" id="sync"><span class="dot"></span><span>${syncLabel()}</span></p>`;
+const list = cats();
+const tp = todayPoints();
+let h = `<header class="top"><div class="brand"><i>Aa</i>Словарик</div>${coins(totalPoints())}</header>
+<section class="hello"><h1>Мои слова</h1>
+<div class="today"><span class="chip num">Сегодня: +${tp} ${plural(tp,'балл','балла','баллов')}</span>
+<span class="chip num">${list.reduce((s,c)=>s+(c.words||[]).length,0)} слов в ${list.length} ${plural(list.length,'категории','категориях','категориях')}</span></div></section>`;
+if (!list.length && !S.newCat){
+h += `<div class="panel empty"><h2>Здесь появятся категории</h2><p class="muted">Создайте первую, например «Животные» или «Школа», и впишите в неё английские слова. Перевод и транскрипция подставятся сами.</p></div>`;
+}
+if (list.length){
+h += `<div class="cats">` + list.map(c => {
+const n=(c.words||[]).length, m=mastered(c), pct=n?Math.round(m/n*100):0;
+return `<button class="cat" data-act="open" data-id="${c.id}">${badge(c)}
+<span class="info"><span class="name">${esc(c.name)}</span>
+<span class="meta num">${n} ${plural(n,'слово','слова','слов')} · выучено ${m}</span>
+<span class="bar" aria-hidden="true"><span style="width:${pct}%"></span></span></span>
+<span class="pts num">${prog(c.id).points||0}</span></button>`;
+}).join('') + `</div>`;
+}
+if (S.newCat){
+h += `<form class="panel" data-form="newcat"><h2>Новая категория</h2>
+<input class="field" id="catname" name="name" maxlength="40" placeholder="Например: Животные" autocomplete="off" data-autofocus>
+<div class="swatches" role="group" aria-label="Цвет">${COLORS.map((c,i)=>`<button type="button" class="sw" style="background:var(${c})" data-act="color" data-i="${i}" aria-pressed="${S.newColor===i}" aria-label="Цвет ${i+1}"></button>`).join('')}</div>
+<div class="row"><button class="btn" type="submit">Создать</button><button type="button" class="btn plain" data-act="cancelcat">Отмена</button></div></form>`;
+} else {
+h += `<button class="btn wide" data-act="newcat">+ Новая категория</button>`;
+}
+h += `<p class="sync ${syncErr?'err':(pendingCount()||flushing)?'wait':''}" id="sync"><span class="dot"></span><span>${syncLabel()}</span></p>`;
 if (syncErr && lastErr) h += `<p class="why">Причина: ${esc(lastErr)}</p>`;
 return h;
 }
-function viewLearn(){
-const t = S.learnT, op = S.learnOp;
-let h = `<header class="top"><button class="back" data-act="home">${I.back}Назад</button>${coins(st.points||0)}</header>
-<h1>Учим таблицу на ${t}</h1>
-<div class="tables">${TABLES.map(x=>`<button class="tbl" data-act="lt" data-t="${x}" aria-pressed="${x===t}"><span class="num">${x}</span></button>`).join('')}</div>
-<div class="seg" style="grid-template-columns:1fr 1fr">${[['m','×  Умножение'],['d','÷  Деление']].map(([k,tt])=>`<button data-act="lop" data-o="${k}" aria-pressed="${op===k}">${tt}</button>`).join('')}</div>
-<p class="muted" style="font-size:.92rem">Скажи ответ вслух и нажми на строку, чтобы проверить себя.</p>
-<div class="ltable">`;
-for (let b=1;b<=10;b++){
-const key = op+t+'-'+b, open = S.open[key];
-const left = op==='m' ? `${t} × ${b} =` : `${t*b} ÷ ${t} =`;
-const ans = op==='m' ? t*b : b;
-h += `<button class="lrow" data-act="reveal" data-k="${key}"><span class="num">${left}</span><span class="ans num ${open?'open':''}">${open?ans:'?'}</span></button>`;
-}
-h += `</div><div class="links"><button class="btn ghost" data-act="openall">${Object.keys(S.open).some(k=>k.startsWith(op+t+'-'))?'Скрыть ответы':'Показать все'}</button>
-<button class="btn" data-act="trytable">Проверить себя</button></div>`;
+function viewCat(){
+const c = cat(S.catId), p = prog(c.id);
+const tabs = [['words','Слова'],['learn','Учить'],['check','Проверка'],['stats','Прогресс']];
+let h = `<header class="top"><button class="back" data-act="home">${I.back}Категории</button>${coins(p.points||0)}</header>
+<div class="cathead">${badge(c)}<h1>${esc(c.name)}</h1></div>
+<nav class="tabs" role="tablist">${tabs.map(([k,t])=>`<button role="tab" aria-selected="${S.tab===k}" data-act="tab" data-tab="${k}">${t}</button>`).join('')}</nav>`;
+h += S.tab==='words' ? tabWords(c,p) : S.tab==='learn' ? tabLearn(c) : S.tab==='check' ? tabCheck(c) : tabStats(c,p);
 return h;
 }
-function exprHTML(it, fill){
-return `<div class="expr num">` + it.parts.map((p,i)=>{
-if (i===it.hole){ return `<span class="gap">${fill===undefined||fill===''?'?':esc(fill)}</span>`; }
-return typeof p==='string' ? `<span class="op">${p}</span>` : `<span>${p}</span>`;
+function tabWords(c, p){
+const words = c.words || [];
+let h = `<form class="panel" data-form="add"><div><h2>Добавить слова</h2><p class="muted" style="font-size:.92rem">По одному слову или фразе в строке, можно по-английски или по-русски. Слова появятся сразу, перевод и транскрипция подставятся за пару секунд.</p></div>
+<textarea class="field" id="draft" name="draft" placeholder="cat&#10;dog&#10;rabbit" autocapitalize="none" autocorrect="off" spellcheck="false">${esc(S.draft)}</textarea>
+${S.addNote ? `<p class="note ${S.addNote.bad?'bad':''}">${esc(S.addNote.text)}</p>` : ''}
+<div class="row"><button class="btn" type="submit">Добавить</button>
+<button type="button" class="btn plain" data-act="manual">${S.manual?'Скрыть ручной ввод':'Ввести вручную'}</button></div></form>`;
+if (S.manual){
+h += `<form class="panel" data-form="manual"><h3>Слово вручную</h3>
+<input class="field" id="m-en" name="en" placeholder="Слово на английском" autocapitalize="none" autocomplete="off">
+<input class="field" id="m-ru" name="ru" placeholder="Перевод" autocomplete="off">
+<input class="field" id="m-ipa" name="ipa" placeholder="Транскрипция, например [kæt]" autocomplete="off">
+<button class="btn" type="submit">Добавить слово</button></form>`;
+}
+if (!words.length){
+h += `<div class="panel empty"><h3>В категории пока нет слов</h3><p class="muted">Впишите несколько слов выше. Для проверки нужно хотя бы 2 слова, а лучше от 4.</p></div>`;
+} else {
+h += `<div class="row" style="justify-content:space-between"><span class="label">${words.length} ${plural(words.length,'слово','слова','слов')}</span></div><div class="words">`;
+words.slice().reverse().forEach(w => {
+if (S.editId === w.id){
+h += `<form class="edit" data-form="edit" data-id="${w.id}">
+<input class="field" id="e-en" name="en" value="${esc(w.en)}" placeholder="Слово на английском" autocapitalize="none" autocomplete="off">
+<input class="field" id="e-ru" name="ru" value="${esc(w.ru)}" placeholder="Перевод" autocomplete="off">
+<input class="field" id="e-ipa" name="ipa" value="${esc(w.ipa)}" placeholder="Транскрипция" autocomplete="off">
+<div class="row"><button class="btn" type="submit">Сохранить</button>
+<button type="button" class="btn danger" data-act="delword" data-id="${w.id}">${S.confirm==='w'+w.id?'Точно удалить?':'Удалить'}</button>
+<button type="button" class="btn plain" data-act="canceledit">Отмена</button></div></form>`;
+} else {
+const enShown = w.pend && !w.en ? w.ru : w.en;
+const ruShown = w.pend ? (w.en ? 'ищу перевод…' : 'ищу английское слово…') : (w.ru || 'нет перевода, нажмите карандаш');
+const wait = w.pend || !w.ru;
+h += `<div class="word ${S.fresh.includes(w.id)?'fresh':''}">
+<button class="icon-btn" data-act="say" data-t="${esc(w.en)}" aria-label="Послушать ${esc(w.en)}" ${w.en?'':'disabled'}>${I.speak}</button>
+<div class="w"><div><span class="en">${esc(enShown)}</span><span class="ipa">${esc(w.ipa||'')}</span></div><div class="ru ${wait?'wait':''}">${esc(ruShown)}</div></div>
+<div class="row" style="gap:6px;flex-wrap:nowrap">${starRow(stars(p,w.id))}<button class="icon-btn sm quiet" data-act="editword" data-id="${w.id}" aria-label="Изменить">${I.edit}</button></div></div>`;
+}
+});
+h += `</div>`;
+}
+h += `<form class="panel" data-form="rename"><span class="label">Категория</span>
+<div class="row"><input class="field grow" id="rename" name="name" value="${esc(c.name)}" maxlength="40" autocomplete="off"><button class="btn ghost" type="submit">Переименовать</button></div>
+<div class="swatches" role="group" aria-label="Цвет">${COLORS.map((col,i)=>`<button type="button" class="sw" style="background:var(${col})" data-act="recolor" data-i="${i}" aria-pressed="${(c.color||0)===i}" aria-label="Цвет ${i+1}"></button>`).join('')}</div>
+<div class="row"><button type="button" class="btn danger" data-act="resetprog">${S.confirm==='reset'?'Обнулить баллы и звёзды?':'Сбросить прогресс'}</button>
+<button type="button" class="btn danger" data-act="delcat">${S.confirm==='delcat'?'Удалить вместе со словами?':'Удалить категорию'}</button></div></form>`;
+return h;
+}
+function tabLearn(c){
+const words = usable(c);
+if (!words.length) return `<div class="panel empty"><h3>Пока нечего учить</h3><p class="muted">Сначала добавьте слова на вкладке «Слова».</p></div>`;
+if (!S.learnOrder || S.learnOrder.length !== words.length || S.learnOrder.some(id => !words.find(w => w.id === id))) S.learnOrder = words.map(w=>w.id);
+if (S.learnIdx >= S.learnOrder.length) S.learnIdx = 0;
+const w = words.find(x=>x.id===S.learnOrder[S.learnIdx]) || words[0];
+return `<div class="flash"><span class="count num">${S.learnIdx+1} / ${words.length}</span>
+<button class="say" data-act="say" data-t="${esc(w.en)}" aria-label="Послушать">${I.speak}</button>
+<div class="big">${esc(w.en)}</div><div class="ipa">${esc(w.ipa||'')}</div>
+<div class="tr">${S.learnShow ? esc(w.ru) : `<button class="reveal" data-act="reveal">Показать перевод</button>`}</div></div>
+<div class="learnnav"><button class="btn ghost" data-act="lprev">← Назад</button><button class="btn" data-act="lnext">Дальше →</button></div>
+<div class="row" style="justify-content:center"><button class="btn plain" data-act="lshuffle">Перемешать карточки</button></div>`;
+}
+const MODES = {
+pick_ru:{ t:'Выбери перевод', d:'Слово на английском, найди русское', pts:10, min:2, ic:'pick' },
+pick_en:{ t:'Найди слово', d:'Слово на русском, найди английское', pts:10, min:2, ic:'find' },
+listen: { t:'Угадай на слух', d:'Послушай и выбери, что прозвучало', pts:10, min:2, ic:'speak' },
+spell: { t:'Напиши слово', d:'Напиши английское слово по переводу', pts:15, min:1, ic:'pen' },
+mix: { t:'Всё вперемешку', d:'Задания всех видов подряд', pts:'10–15', min:2, ic:'mix' }
+};
+function tabCheck(c){
+const n = usable(c).length;
+let h = `<div class="modes">` + Object.entries(MODES).map(([k,m]) =>
+`<button class="mode" data-act="start" data-mode="${k}" ${n<m.min?'disabled':''}><span class="mi">${I[m.ic]}</span><b>${m.t}</b><span>${m.d}</span><em>+${m.pts} за ответ</em></button>`).join('') + `</div>`;
+if (n < 2) h += `<p class="note">Для проверки с вариантами ответа нужно хотя бы 2 слова с переводом.</p>`;
+else h += `<p class="legend">В одной проверке до 10 вопросов. Чаще попадаются слова, которые ещё плохо выучены.</p>`;
+return h;
+}
+function chartSVG(p){
+const days = []; const now = new Date();
+for (let i=13;i>=0;i--){ const d=new Date(now); d.setDate(now.getDate()-i); days.push({ k:dayKey(d), d:d.getDate(), v:(p.days||{})[dayKey(d)]||0 }); }
+const max = Math.max(10, ...days.map(x=>x.v)); const top = Math.ceil(max/10)*10;
+const W=340, H=170, L=30, B=22, T=16, bw=(W-L)/14;
+let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Баллы по дням за 2 недели">`;
+[0, top/2, top].forEach(v => { const y = T + (H-T-B)*(1-v/top);
+s += `<line x1="${L}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="${L-6}" y="${y+4}" text-anchor="end">${v}</text>`; });
+days.forEach((x,i) => { const h=(H-T-B)*x.v/top, X=L+i*bw+bw*.18, y=H-B-h, last=i===13;
+s += `<rect x="${X}" y="${y}" width="${bw*.64}" height="${Math.max(h, x.v?2:0)}" rx="3" fill="${last?'var(--sun)':'var(--primary)'}" opacity="${x.v?1:0}"/>`;
+if (x.v) s += `<text class="val" x="${X+bw*.32}" y="${y-4}" text-anchor="middle">${x.v}</text>`;
+if (i%2===1 || last) s += `<text x="${X+bw*.32}" y="${H-6}" text-anchor="middle">${last?'сег.':x.d}</text>`; });
+return s + `</svg>`;
+}
+function tabStats(c, p){
+const words = c.words||[], m = mastered(c);
+const ss = p.sessions||[]; const r = ss.reduce((s,x)=>s+x.r,0), n = ss.reduce((s,x)=>s+x.n,0);
+let h = `<div class="tiles"><div class="tile"><b class="num">${p.points||0}</b><span>баллов</span></div>
+<div class="tile"><b class="num">${m}/${words.length}</b><span>выучено</span></div>
+<div class="tile"><b class="num">${n?Math.round(r/n*100):0}%</b><span>верных</span></div></div>
+<section class="panel"><h3>Баллы по дням</h3>${chartSVG(p)}</section>`;
+if (ss.length){
+const fmt = t => { const d=new Date(t); return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}); };
+h += `<section class="panel"><h3>Последние проверки</h3><div class="sess num">` + ss.slice(-8).reverse().map(x =>
+`<span>${esc((MODES[x.m]||{}).t||x.m)}<br><small class="muted">${fmt(x.t)}</small></span><span class="acc" style="color:${x.r/x.n>=.8?'var(--good)':x.r/x.n>=.5?'var(--sun-ink)':'var(--bad)'}">${x.r}/${x.n}</span><span class="muted">+${x.p}</span>`).join('') + `</div></section>`;
+}
+if (words.length){
+const rows = words.map(w=>({w, s:stars(p,w.id), st:(p.words||{})[w.id]||{r:0,w:0}})).sort((a,b)=>a.s-b.s || b.st.w-a.st.w);
+h += `<section class="panel"><h3>Как выучены слова</h3><p class="legend">3 звезды — слово выучено. Звезда прибавляется за верный ответ и снимается за ошибку.</p><div class="wstat num">` +
+rows.map(x=>`<span class="en">${esc(x.w.en||x.w.ru)}</span>${starRow(x.s)}<span class="muted">✓${x.st.r} ✗${x.st.w}</span>`).join('') + `</div></section>`;
+}
+return h;
+}
+/* ---------- quiz ---------- */
+function buildQuiz(c, modeKey){
+const words = usable(c), p = prog(c.id);
+const count = Math.min(10, Math.max(words.length, Math.min(6, words.length * 2)));
+const ranked = shuffle(words).sort((a,b)=>stars(p,a.id)-stars(p,b.id));
+const chosen = [];
+while (chosen.length < count) chosen.push(...ranked);
+const picked = shuffle(chosen.slice(0, count));
+const kinds = ['pick_ru','pick_en','listen','spell'];
+const items = picked.map(w => {
+const k = modeKey === 'mix' ? kinds[Math.floor(Math.random()*kinds.length)] : modeKey;
+const others = shuffle(words.filter(x=>x.id!==w.id && norm(x.en)!==norm(w.en))).slice(0,3);
+return { k, wid:w.id, opts: k==='spell' ? [] : shuffle([w, ...others]).map(x=>x.id) };
+});
+return { catId:c.id, mode:modeKey, items, i:0, right:0, points:0, state:null, chosen:null, typed:'', hint:false };
+}
+function quizWord(q, id){ const c = cat(q.catId); return ((c && c.words) || []).find(x=>x.id===id) || { en:'', ru:'', ipa:'' }; }
+function viewQuiz(){
+const q = S.quiz; const it = q.items[q.i];
+const w = quizWord(q, it.wid); const byId = id => quizWord(q, id);
+let h = `<div class="qtop"><button class="icon-btn quiet" data-act="quit" aria-label="Закончить">${I.close}</button>
+<div class="qbar" aria-label="Вопрос ${q.i+1} из ${q.items.length}"><span style="width:${(q.i)/q.items.length*100}%"></span></div>
+<span class="coins num ${q.state==='ok'?'plus':''}">${I.coin}<span>${q.points}</span></span></div>`;
+if (it.k === 'pick_ru'){
+h += `<div class="qcard"><span class="ask">Как это по-русски?</span><div class="big">${esc(w.en)}</div><div class="ipa">${esc(w.ipa||'')}</div>
+<button class="icon-btn" data-act="say" data-t="${esc(w.en)}" aria-label="Послушать">${I.speak}</button></div>`;
+h += optsHTML(q, it, id=>byId(id).ru);
+} else if (it.k === 'pick_en'){
+h += `<div class="qcard"><span class="ask">Как это по-английски?</span><div class="big">${esc(w.ru)}</div></div>`;
+h += optsHTML(q, it, id=>byId(id).en);
+} else if (it.k === 'listen'){
+h += `<div class="qcard"><span class="ask">Какое слово прозвучало?</span><button class="say huge" data-act="say" data-t="${esc(w.en)}" aria-label="Послушать ещё раз">${I.speak}</button><span class="muted">Нажми, чтобы послушать ещё раз</span></div>`;
+h += optsHTML(q, it, id=>byId(id).en);
+} else {
+const hint = w.en.split('').map((ch,i)=> ch===' ' ? ' ' : (i===0 && q.hint) ? ch : '_').join(' ');
+h += `<div class="qcard"><span class="ask">Напиши по-английски</span><div class="big">${esc(w.ru)}</div><div class="hint">${esc(hint)}</div>
+<div class="row" style="justify-content:center"><button class="btn ghost" data-act="say" data-t="${esc(w.en)}">${I.speak.replace('<svg','<svg width="20" height="20"')}Послушать</button>
+${q.state||q.hint?'':'<button class="btn plain" data-act="hint">Подсказка: первая буква</button>'}</div></div>
+<form class="spell" data-form="spell"><input class="field ${q.state||''}" id="spell" name="spell" value="${esc(q.typed)}" autocapitalize="none" autocorrect="off" autocomplete="off" spellcheck="false" placeholder="слово" ${q.state?'readonly':'data-autofocus'}>
+${q.state?'':'<button class="btn" type="submit">Проверить</button>'}</form>`;
+}
+if (q.state === 'ok') h += `<div class="fb ok"><span>Верно! +${q.lastPts}</span>${it.k==='spell'?`<button class="btn" data-act="next" data-autofocus>Дальше</button>`:''}</div>`;
+if (q.state === 'no') h += `<div class="fb no"><span>Правильно: <span class="ans">${esc(it.k==='pick_ru'?w.ru:w.en)}</span>${it.k!=='pick_ru'?` <span class="ipa">${esc(w.ipa||'')}</span>`:''}</span><button class="btn" data-act="next" data-autofocus>Дальше</button></div>`;
+return h;
+}
+function optsHTML(q, it, label){
+return `<div class="opts">` + it.opts.map(id => {
+let cls = '';
+if (q.state){ if (id===it.wid) cls='ok'; else if (id===q.chosen) cls='no'; }
+return `<button class="opt ${cls}" data-act="answer" data-id="${id}" ${q.state?'disabled':''}>${esc(label(id)||'—')}</button>`;
 }).join('') + `</div>`;
 }
-function viewQuiz(){
-const q = S.q, it = q.items[q.i];
-const top = q.mode==='blitz'
-? `<span class="timer num ${q.left<=10?'low':''}" id="timer">${q.left}</span>`
-: `<div class="qbar"><span style="width:${q.i/q.items.length*100}%"></span></div>`;
-let h = `<div class="qtop"><button class="icon-btn quiet" data-act="quit" aria-label="Закончить">${I.close}</button>${top}<span class="coins num ${q.state==='ok'?'plus':''}">${I.coin}<span>${q.points}</span></span></div>`;
-if (it.kind==='tf'){
-const shownParts = it.parts.slice(); shownParts[it.hole] = it.shown;
-h += `<div class="qcard"><span class="ask">Правильно записано?</span><div class="expr num">${shownParts.map(p=>typeof p==='string'?`<span class="op">${p}</span>`:`<span>${p}</span>`).join('')}</div></div>`;
-h += `<div class="opts two">${[['yes','Верно ✓',true],['no','Неверно ✗',false]].map(([v,l,val])=>{
-let cls=''; if (q.state){ if (val===it.truth) cls='ok'; else if (q.chosen===v) cls='no'; }
-return `<button class="opt big ${cls}" data-act="tf" data-v="${v}" ${q.state?'disabled':''}>${l}</button>`; }).join('')}</div>`;
-} else if (it.kind==='choose'){
-h += `<div class="qcard"><span class="ask">Выбери ответ</span>${exprHTML(it)}</div>`;
-h += `<div class="opts grid4">${it.opts.map(o=>{ let cls=''; if (q.state){ if (o===it.ans) cls='ok'; else if (q.chosen===o) cls='no'; }
-return `<button class="opt big num ${cls}" data-act="pick" data-v="${o}" ${q.state?'disabled':''}>${o}</button>`; }).join('')}</div>`;
-} else {
-h += `<div class="qcard"><span class="ask">${it.kind==='missing'?'Какое число спряталось?':'Сколько будет?'}</span>${exprHTML(it, q.typed)}</div>`;
-h += `<div class="typed num ${q.state||''}">${q.typed?esc(q.typed):'<span class="ph">Набери ответ</span>'}</div>`;
-if (!q.state){
-h += `<div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="key num" data-act="key" data-k="${n}">${n}</button>`).join('')}
-<button class="key del" data-act="key" data-k="del" aria-label="Стереть">${I.del}</button><button class="key num" data-act="key" data-k="0">0</button><button class="key go" data-act="key" data-k="ok">Готово</button></div>`;
+function answer(ok, pts){
+const q = S.quiz; const it = q.items[q.i];
+q.state = ok ? 'ok' : 'no'; q.lastPts = ok ? pts : 0;
+if (ok){ q.right++; q.points += pts; }
+const p = clone(prog(q.catId)); p.words = p.words||{}; p.days = p.days||{}; p.sessions = p.sessions||[];
+const s = p.words[it.wid] || (p.words[it.wid] = { r:0, w:0 });
+if (ok){ s.r++; p.points = (p.points||0) + pts; p.days[dayKey()] = (p.days[dayKey()]||0) + pts; }
+else { s.w++; }
+save('progress', q.catId, p);
+render();
+const w = quizWord(q, it.wid);
+if (ok && it.k !== 'listen' && w.en) speak(w.en);
+if (ok && it.k !== 'spell') setTimeout(()=>{ if (S.quiz===q && q.state==='ok') nextQ(); }, 1100);
 }
+function nextQ(){
+const q = S.quiz;
+if (q.i + 1 >= q.items.length){ finishQuiz(); return; }
+q.i++; q.state=null; q.chosen=null; q.typed=''; q.hint=false;
+render();
+if (q.items[q.i].k === 'listen'){ const w = quizWord(q, q.items[q.i].wid); if (w.en) speak(w.en); }
 }
-if (q.state==='ok') h += `<div class="fb ok"><span>Верно! +${q.lastPts}</span></div>`;
-if (q.state==='no'){
-h += `<div class="fb no"><span class="why2">${it.kind==='tf' ? (it.truth?'Пример был записан верно: ':'Правильно: ') : 'Правильно: '}${esc(it.why)}</span>${q.mode==='blitz'?'':'<button class="btn" data-act="next">Дальше</button>'}</div>`;
+function finishQuiz(){
+const q = S.quiz;
+const answered = q.i + (q.state ? 1 : 0);
+if (answered > 0){
+const p = clone(prog(q.catId)); p.sessions = p.sessions||[];
+p.sessions.push({ t:Date.now(), m:q.mode, r:q.right, n:answered, p:q.points });
+if (p.sessions.length > 60) p.sessions = p.sessions.slice(-60);
+save('progress', q.catId, p);
 }
-return h;
+q.answered = answered;
+S.view = 'result'; render();
 }
 function viewResult(){
-const q = S.q, n = q.answered, pct = n ? q.right/n : 0;
-const title = !n ? 'Тренировка закончена' : q.mode==='blitz' ? `${q.right} ${plural(q.right,'пример','примера','примеров')} за минуту!` : pct===1 ? 'Без единой ошибки!' : pct>=.8 ? 'Отлично!' : pct>=.5 ? 'Хорошо, продолжай!' : 'Нужно ещё потренироваться';
-let h = `<div class="panel result" style="padding:28px 18px;gap:14px"><span class="label">${esc(MODES[q.mode].t)}</span><h1>${title}</h1>
-<div class="score num">+${q.points}</div><p class="muted num">Верно ${q.right} из ${n}${q.mode==='blitz'&&q.best?` · рекорд ${q.best}`:''}</p>`;
-if (q.mistakes.length){
-h += `<div class="panel" style="box-shadow:none;background:var(--paper);width:100%"><h3>Над этим поработаем</h3><div class="mist num">` +
-q.mistakes.slice(0,8).map(m=>`<span>${esc(m.why.split(',')[0])}</span><span class="bad">${esc(m.given)}</span>`).join('') + `</div></div>`;
+const q = S.quiz; const n = q.answered || 0; const pct = n ? q.right/n : 0;
+const title = !n ? 'Проверка закончена' : pct===1 ? 'Без единой ошибки!' : pct>=.8 ? 'Отлично!' : pct>=.5 ? 'Хорошо, продолжай!' : 'Нужно ещё потренироваться';
+return `<div class="panel result" style="padding:28px 18px;gap:14px"><span class="label">${esc(MODES[q.mode].t)}</span><h1>${title}</h1>
+<div class="score num">+${q.points}</div><p class="muted num">Верно ${q.right} из ${n}</p>
+<div class="row" style="justify-content:center"><button class="btn" data-act="again">Ещё раз</button><button class="btn ghost" data-act="tocat">К категории</button></div></div>`;
 }
-h += `<div class="row" style="justify-content:center"><button class="btn" data-act="again">Ещё раз</button><button class="btn ghost" data-act="home">На главную</button></div></div>`;
-return h;
+
+/* ---------- adding words: instantly on screen, translation in the background ---------- */
+/* Основной путь: облачная функция (Яндекс Переводчик + кеш). Запасной: напрямую из браузера с короткими таймаутами. */
+async function directTranslate(text, from, to){
+try{
+const u = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl='+from+'&tl='+to+'&dt=t&q='+encodeURIComponent(text);
+const j = await (await fetchT(u, {}, 4000)).json();
+const t = (j[0]||[]).map(x=>x && x[0] || '').join('').trim();
+if (t) return t;
+}catch(e){}
+try{
+const u = 'https://api.mymemory.translated.net/get?langpair='+from+'|'+to+'&q='+encodeURIComponent(text);
+const j = await (await fetchT(u, {}, 4000)).json();
+const t = j && j.responseData && j.responseData.translatedText;
+if (t && !/MYMEMORY WARNING/i.test(t)) return String(t).trim();
+}catch(e){}
+return '';
 }
-function chartSVG(){
-const days=[]; const now=new Date();
-for (let i=13;i>=0;i--){ const d=new Date(now); d.setDate(now.getDate()-i); days.push({d:d.getDate(), v:(st.days||{})[dayKey(d)]||0}); }
-const top = Math.ceil(Math.max(10,...days.map(x=>x.v))/10)*10;
-const W=340,H=170,L=30,B=22,T=16,bw=(W-L)/14;
-let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Баллы по дням за 2 недели">`;
-[0,top/2,top].forEach(v=>{ const y=T+(H-T-B)*(1-v/top); s+=`<line x1="${L}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${L-6}" y="${y+4}" text-anchor="end">${v}</text>`; });
-days.forEach((x,i)=>{ const h=(H-T-B)*x.v/top, X=L+i*bw+bw*.18, y=H-B-h, last=i===13;
-s+=`<rect x="${X}" y="${y}" width="${bw*.64}" height="${Math.max(h,x.v?2:0)}" rx="3" fill="${last?'var(--sun)':'var(--primary)'}" opacity="${x.v?1:0}"/>`;
-if (x.v) s+=`<text class="val" x="${X+bw*.32}" y="${y-4}" text-anchor="middle">${x.v}</text>`;
-if (i%2===1||last) s+=`<text x="${X+bw*.32}" y="${H-6}" text-anchor="middle">${last?'сег.':x.d}</text>`; });
-return s+'</svg>';
-}
-function viewStats(){
-const ss = st.sessions||[], r=ss.reduce((s,x)=>s+x.r,0), n=ss.reduce((s,x)=>s+x.n,0);
-const all = allFacts(TABLES,['m','d']), learned = all.filter(f=>stars(f.k)>=3).length;
-const op = S.statOp;
-let h = `<header class="top"><button class="back" data-act="home">${I.back}Назад</button>${coins(st.points||0)}</header><h1>Мой прогресс</h1>
-<div class="tiles"><div class="tile"><b class="num">${st.points||0}</b><span>баллов</span></div>
-<div class="tile"><b class="num">${learned}/${all.length}</b><span>выучено</span></div>
-<div class="tile"><b class="num">${n?Math.round(r/n*100):0}%</b><span>верных</span></div></div>
-<section class="panel"><h3>Что уже выучено</h3>
-<div class="seg" style="grid-template-columns:1fr 1fr">${[['m','Умножение'],['d','Деление']].map(([k,t])=>`<button data-act="sop" data-o="${k}" aria-pressed="${op===k}">${t}</button>`).join('')}</div>
-<p class="legend">${op==='m'?'Строка — таблица, столбец — на что умножаем.':'Строка — на что делим, столбец — ответ. Например, строка 7 и столбец 8: 56 ÷ 7 = 8.'}</p>
-<div class="heat num"><span class="h"></span>${[1,2,3,4,5,6,7,8,9,10].map(b=>`<span class="h">${b}</span>`).join('')}`;
-for (let a=1;a<=10;a++){
-h += `<span class="h">${a}</span>`;
-for (let b=1;b<=10;b++){ const k=fkey(op,a,b), f=st.facts[k];
-const cls = !f ? 'sx' : 's'+stars(k);
-h += `<span class="${cls}" title="${op==='m'?`${a} × ${b} = ${a*b}`:`${a*b} ÷ ${a} = ${b}`}">${f&&stars(k)>=3?'✓':''}</span>`; }
-}
-h += `</div><div class="keyrow"><span><i style="background:var(--line);opacity:.5"></i>не решал</span><span><i style="background:var(--bad-soft)"></i>путается</span><span><i style="background:var(--sun-soft)"></i>почти</span><span><i style="background:var(--good)"></i>выучено</span></div></section>
-<section class="panel"><h3>Баллы по дням</h3>${chartSVG()}</section>`;
-const hard = Object.entries(st.facts).filter(([k,v])=>v.w>0).sort((x,y)=>(y[1].w-y[1].r*.3)-(x[1].w-x[1].r*.3)).slice(0,8);
-if (hard.length){
-h += `<section class="panel"><h3>Чаще всего ошибки</h3><div class="wstat num">` + hard.map(([k,v])=>{ const [o,a,b]=k.split('-'); const A=+a,Bb=+b;
-return `<span class="en">${o==='m'?`${A} × ${Bb} = ${A*Bb}`:`${A*Bb} ÷ ${A} = ${Bb}`}</span>${starRow(stars(k))}<span class="muted">✓${v.r} ✗${v.w}</span>`; }).join('') + `</div></section>`;
-}
-if (ss.length){
-const fmt=t=>{ const d=new Date(t); return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})+', '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}); };
-h += `<section class="panel"><h3>Последние тренировки</h3><div class="sess num">`+ss.slice(-8).reverse().map(x=>`<span>${esc((MODES[x.m]||{}).t||x.m)}<br><small class="muted">${fmt(x.t)}</small></span><span class="acc" style="color:${x.r/x.n>=.8?'var(--good)':x.r/x.n>=.5?'var(--sun-ink)':'var(--bad)'}">${x.r}/${x.n}</span><span class="muted">+${x.p}</span>`).join('')+`</div></section>`;
-}
-h += `<button class="btn danger" data-act="reset">${S.confirm?'Точно обнулить весь прогресс?':'Сбросить прогресс'}</button>`;
-return h;
-}
-const starRow = n => `<span class="stars">${[0,1,2].map(i=>`<span class="${i<n?'on':''}">${I.star}</span>`).join('')}</span>`;
-/* ---------- quiz logic ---------- */
-let blitzTimer = null, flushT = null;
-function commitSoon(){ st.updatedAt = Date.now(); pending = true; saveLocal(); clearTimeout(flushT); flushT = setTimeout(flush, 2000); }
-function startQuiz(mode, cfg){
-cfg = cfg || { tables: st.tables.slice(), ops: st.ops };
-const facts = allFacts(cfg.tables, opsOf(cfg.ops));
-if (!facts.length){ toast('Выбери хотя бы одну таблицу'); return; }
-const q = { mode, cfg, facts, items:[], i:0, right:0, n:0, points:0, state:null, chosen:null, typed:'', mistakes:[] };
-if (mode==='blitz'){
-q.left = 60; q.items.push(makeItem(pickWeighted(facts,1)[0], 'input'));
-clearInterval(blitzTimer);
-blitzTimer = setInterval(() => { if (S.q!==q){ clearInterval(blitzTimer); return; } q.left--; const el=document.getElementById('timer'); if (el){ el.textContent=q.left; el.classList.toggle('low', q.left<=10); } if (q.left<=0){ clearInterval(blitzTimer); finish(); } }, 1000);
-} else {
-const kinds = ['choose','input','missing','tf'];
-q.items = pickWeighted(facts, 10).map(f => makeItem(f, mode==='mix' ? kinds[rnd(4)] : mode));
-}
-S.q = q; S.view = 'quiz'; render(); window.scrollTo(0,0);
-}
-function answer(ok, given){
-const q = S.q, it = q.items[q.i];
-q.state = ok ? 'ok' : 'no'; q.n++;
-const pts = ok ? (q.mode==='blitz' ? KINDS.blitz : KINDS[it.kind]) : 0; q.lastPts = pts;
-const f = st.facts[it.k] || (st.facts[it.k] = { r:0, w:0 });
-if (ok){ q.right++; q.points += pts; f.r++; st.points = (st.points||0)+pts; st.days[dayKey()] = (st.days[dayKey()]||0)+pts; }
-else { f.w++; q.mistakes.push({ why:it.why, given:String(given) }); }
-commitSoon(); render();
-const delay = ok ? (q.mode==='blitz'?350:800) : (q.mode==='blitz'?1600:0);
-if (delay) setTimeout(() => { if (S.q===q && q.items[q.i]===it && S.view==='quiz') next(); }, delay);
-}
-function next(){
-const q = S.q;
-if (q.mode==='blitz'){ if (q.left<=0) return finish(); q.items.push(makeItem(pickWeighted(q.facts.filter(f=>f.k!==q.items[q.i].k).length?q.facts.filter(f=>f.k!==q.items[q.i].k):q.facts,1)[0],'input')); }
-else if (q.i+1 >= q.items.length) return finish();
-q.i++; q.state=null; q.chosen=null; q.typed='';
-render();
-}
-function finish(){
-const q = S.q; clearInterval(blitzTimer);
-if (q.n > 0){
-st.sessions = st.sessions||[]; st.sessions.push({ t:Date.now(), m:q.mode, r:q.right, n:q.n, p:q.points });
-if (st.sessions.length>80) st.sessions = st.sessions.slice(-80);
-if (q.mode==='blitz'){ st.blitzBest = Math.max(st.blitzBest||0, q.right); q.best = st.blitzBest; }
-st.updatedAt = Date.now(); pending = true; saveLocal(); clearTimeout(flushT); flush();
-}
-q.answered = q.n; S.view = 'result'; render(); window.scrollTo(0,0);
-}
-function typeKey(k){
-const q = S.q; if (!q || q.state) return; const it = q.items[q.i]; if (it.kind!=='input' && it.kind!=='missing') return;
-if (k==='del') q.typed = q.typed.slice(0,-1);
-else if (k==='ok'){ if (!q.typed){ toast('Набери ответ'); return; } answer(+q.typed===it.ans, q.typed); return; }
-else if (q.typed.length < 3) q.typed = (q.typed==='0'?'':q.typed) + k;
-render();
-}
-document.addEventListener('keydown', e => {
-if (S.view!=='quiz') return;
-if (/^[0-9]$/.test(e.key)) typeKey(e.key);
-else if (e.key==='Backspace') typeKey('del');
-else if (e.key==='Enter'){ if (S.q.state==='no' && S.q.mode!=='blitz') next(); else typeKey('ok'); }
+async function directPhonetics(en){
+try{
+const r = await fetchT('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(en), {}, 3000);
+if (!r.ok) return { ipa:'', au:'' };
+const entries = await r.json();
+let ipaUk='', ipaAny='', auUk='', auAny='';
+entries.forEach(e => {
+if (!ipaAny && e.phonetic) ipaAny = e.phonetic;
+(e.phonetics||[]).forEach(p => {
+const uk = /-uk\.mp3$/.test(p.audio||'');
+if (p.text){ if (uk && !ipaUk) ipaUk = p.text; if (!ipaAny) ipaAny = p.text; }
+if (p.audio){ if (uk && !auUk) auUk = p.audio; if (!auAny) auAny = p.audio; }
 });
+});
+const ipa = (ipaUk||ipaAny).replace(/^[\/\[]\s*|\s*[\/\]]$/g,'');
+return { ipa: ipa ? '['+ipa+']' : '', au: auUk||auAny };
+}catch(e){ return { ipa:'', au:'' }; }
+}
+async function directOne(src){
+let en = src, ru = '';
+if (CYR.test(src)){ ru = src; en = (await directTranslate(src, 'ru', 'en')).split(',')[0].trim(); if (!/^I\b/.test(en)) en = en.toLowerCase(); }
+else { ru = await directTranslate(src, 'en', 'ru'); if (src === src.toLowerCase() && ru) ru = ru.charAt(0).toLowerCase() + ru.slice(1); }
+const ph = en ? await directPhonetics(en) : { ipa:'', au:'' };
+return { src, en, ru, ipa:ph.ipa, au:ph.au };
+}
+async function lookup(list){
+try{
+const j = await api('lookup', { words:list }, 15000);
+if (j && Array.isArray(j.items)) return j.items;
+}catch(e){}
+const out = [];
+for (let i=0;i<list.length;i+=8) out.push(...await Promise.all(list.slice(i,i+8).map(directOne)));
+return out;
+}
+async function addWords(text){
+const catId = S.catId; const c = cat(catId);
+const have = new Set((c.words||[]).map(w=>norm(w.en||w.ru)));
+const list = [...new Set(text.split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean))].filter(s=>!have.has(norm(s))).slice(0,120);
+if (!list.length){ S.addNote = { text:'Эти слова уже есть в категории.' }; render(); return; }
+const ids = {};
+updateCatById(catId, b => {
+b.words = b.words || [];
+list.forEach(src => { const id = uid(); ids[src] = id; const ru = CYR.test(src);
+b.words.push({ id, en: ru ? '' : src, ru: ru ? src : '', ipa:'', au:'', pend:1 }); });
+});
+S.draft = ''; S.fresh = Object.values(ids);
+S.addNote = { text:`Добавлено: ${list.length} ${plural(list.length,'слово','слова','слов')}. Подставляю перевод…` };
+render();
+let items = [];
+try{ items = await lookup(list); }catch(e){}
+const bySrc = {}; items.forEach(it => { if (it && it.src) bySrc[it.src] = it; });
+let missing = 0;
+updateCatById(catId, b => {
+const seen = new Set();
+b.words = (b.words||[]).filter(w => {
+const src = Object.keys(ids).find(s => ids[s] === w.id);
+if (src !== undefined && w.pend){
+const it = bySrc[src] || {};
+if (it.en) w.en = it.en;
+if (it.ru) w.ru = it.ru;
+if (it.ipa && !w.ipa) w.ipa = it.ipa;
+if (it.au) w.au = it.au;
+delete w.pend;
+if (!w.en || !w.ru) missing++;
+}
+const k = norm(w.en || w.ru);
+if (k && seen.has(k)) return false;
+seen.add(k); return true;
+});
+});
+S.addNote = missing
+? { text:`Для ${missing} ${plural(missing,'слова','слов','слов')} перевод не нашёлся. Нажмите карандаш и впишите вручную.`, bad:true }
+: { text:'Готово! Проверьте перевод, при ошибке нажмите на карандаш.' };
+refresh();
+}
+function updateCatById(catId, fn){ const cur = cat(catId); if (!cur) return; const { id, ...body } = clone(cur); fn(body); save('cats', id, body); }
+function updateCat(fn){ updateCatById(S.catId, fn); }
 /* ---------- events ---------- */
+$app.addEventListener('input', e => { if (e.target.id === 'draft') S.draft = e.target.value; if (e.target.id === 'spell' && S.quiz) S.quiz.typed = e.target.value; });
+$app.addEventListener('submit', e => {
+e.preventDefault(); const f = e.target, kind = f.dataset.form, fd = new FormData(f);
+if (kind === 'newcat'){ const name = String(fd.get('name')||'').trim(); if (!name){ toast('Введите название категории'); return; }
+const id = uid(); save('cats', id, { name, color:S.newColor, createdAt:Date.now(), words:[] }); S.newCat=false; S.catId=id; S.view='cat'; S.tab='words'; S.draft=''; S.addNote=null; S.fresh=[]; render(); }
+if (kind === 'add'){ const t = String(fd.get('draft')||'').trim(); if (!t){ toast('Впишите хотя бы одно слово'); return; } document.activeElement && document.activeElement.blur(); addWords(t); }
+if (kind === 'manual'){ const en=String(fd.get('en')||'').trim(), ru=String(fd.get('ru')||'').trim(), ipa=String(fd.get('ipa')||'').trim();
+if (!en || !ru){ toast('Нужны слово и перевод'); return; }
+if ((cat(S.catId).words||[]).some(w=>norm(w.en)===norm(en))){ toast('Такое слово уже есть'); return; }
+const id = uid(); updateCat(b => { b.words = b.words||[]; b.words.push({ id, en, ru, ipa }); }); S.fresh=[id]; f.reset(); render(); }
+if (kind === 'edit'){ const wid = f.dataset.id; const en=String(fd.get('en')||'').trim(), ru=String(fd.get('ru')||'').trim(), ipa=String(fd.get('ipa')||'').trim();
+if (!en){ toast('Слово не может быть пустым'); return; }
+updateCat(b => { const w = b.words.find(x=>x.id===wid); if (w){ if (w.en !== en) w.au=''; w.en=en; w.ru=ru; w.ipa=ipa; delete w.pend; } }); S.editId=null; S.confirm=null; render(); }
+if (kind === 'rename'){ const name = String(fd.get('name')||'').trim(); if (!name) return; updateCat(b=>{ b.name=name; }); document.activeElement && document.activeElement.blur(); toast('Название сохранено'); render(); }
+if (kind === 'spell'){ const q = S.quiz; if (q.state) return; const w = quizWord(q, q.items[q.i].wid);
+const typed = norm(q.typed); if (!typed){ toast('Напиши слово'); return; }
+answer(typed === norm(w.en), q.hint ? 10 : 15); }
+});
 $app.addEventListener('click', e => {
 const b = e.target.closest('[data-act]'); if (!b || b.disabled) return;
 const a = b.dataset.act;
-if (a!=='reset') S.confirm = false;
+if (a !== 'delword' && a !== 'delcat' && a !== 'resetprog') S.confirm = null;
 switch (a){
-case 'tbl': { const t=+b.dataset.t; st.tables = st.tables.includes(t) ? st.tables.filter(x=>x!==t) : [...st.tables,t].sort((x,y)=>x-y); commit(); render(); return; }
-case 'tblall': st.tables = TABLES.slice(); commit(); render(); return;
-case 'tbl29': st.tables = [2,3,4,5,6,7,8,9]; commit(); render(); return;
-case 'tblnone': st.tables = []; commit(); render(); return;
-case 'ops': st.ops = b.dataset.o; commit(); render(); return;
-case 'start': startQuiz(b.dataset.mode); return;
-case 'learn': S.view='learn'; render(); window.scrollTo(0,0); return;
-case 'stats': S.view='stats'; render(); window.scrollTo(0,0); return;
-case 'home': clearInterval(blitzTimer); S.view='home'; render(); window.scrollTo(0,0); return;
-case 'lt': S.learnT=+b.dataset.t; render(); return;
-case 'lop': S.learnOp=b.dataset.o; render(); return;
-case 'reveal': S.open[b.dataset.k] = !S.open[b.dataset.k]; render(); return;
-case 'openall': { const p=S.learnOp+S.learnT+'-'; const any=Object.keys(S.open).some(k=>k.startsWith(p)&&S.open[k]);
-for (let i=1;i<=10;i++){ if (any) delete S.open[p+i]; else S.open[p+i]=true; } render(); return; }
-case 'trytable': startQuiz('mix', { tables:[S.learnT], ops:S.learnOp }); return;
-case 'quit': finish(); return;
-case 'pick': { const q=S.q; if (q.state) return; q.chosen=+b.dataset.v; answer(q.chosen===q.items[q.i].ans, q.chosen); return; }
-case 'tf': { const q=S.q; if (q.state) return; q.chosen=b.dataset.v; const it=q.items[q.i]; answer((b.dataset.v==='yes')===it.truth, it.truth?'Неверно':'Верно'); return; }
-case 'key': typeKey(b.dataset.k); return;
-case 'next': next(); return;
-case 'again': startQuiz(S.q.mode, S.q.cfg); return;
-case 'sop': S.statOp=b.dataset.o; render(); return;
-case 'reset': if (!S.confirm){ S.confirm=true; render(); return; }
-const keep = { tables:st.tables, ops:st.ops }; st = Object.assign(fresh(), keep); S.confirm=false; commit(); toast('Прогресс сброшен'); render(); return;
+case 'say': if (b.dataset.t) speak(b.dataset.t); return;
+case 'home': S.view='home'; S.catId=null; render(); window.scrollTo(0,0); return;
+case 'open': S.catId=b.dataset.id; S.view='cat'; S.tab='words'; S.draft=''; S.addNote=null; S.fresh=[]; S.editId=null; S.learnIdx=0; S.learnShow=false; S.learnOrder=null; S.manual=false; render(); window.scrollTo(0,0); return;
+case 'newcat': S.newCat=true; S.newColor=Object.keys(data.cats).length%COLORS.length; render(); return;
+case 'cancelcat': S.newCat=false; render(); return;
+case 'color': S.newColor=+b.dataset.i; $app.querySelectorAll('[data-act="color"]').forEach(x=>x.setAttribute('aria-pressed', x===b)); return;
+case 'recolor': updateCat(c=>{ c.color=+b.dataset.i; }); render(); return;
+case 'tab': S.tab=b.dataset.tab; S.editId=null; S.learnShow=false; render(); return;
+case 'manual': S.manual=!S.manual; render(); return;
+case 'editword': S.editId=b.dataset.id; render(); return;
+case 'canceledit': S.editId=null; render(); return;
+case 'delword': if (S.confirm!=='w'+b.dataset.id){ S.confirm='w'+b.dataset.id; render(); return; }
+updateCat(c=>{ c.words=c.words.filter(w=>w.id!==b.dataset.id); }); S.editId=null; S.confirm=null; render(); return;
+case 'delcat': if (S.confirm!=='delcat'){ S.confirm='delcat'; render(); return; }
+save('cats', S.catId, DEL); if (data.progress[S.catId]) save('progress', S.catId, DEL); S.confirm=null; S.view='home'; S.catId=null; render(); return;
+case 'resetprog': if (S.confirm!=='reset'){ S.confirm='reset'; render(); return; }
+save('progress', S.catId, { points:0, words:{}, days:{}, sessions:[] }); S.confirm=null; toast('Прогресс сброшен'); render(); return;
+case 'reveal': S.learnShow=true; render(); return;
+case 'lnext': case 'lprev': { const n=usable(cat(S.catId)).length; if (!n) return; S.learnIdx=(S.learnIdx+(a==='lnext'?1:-1)+n)%n; S.learnShow=false; render();
+const w=cat(S.catId).words.find(x=>x.id===S.learnOrder[S.learnIdx]); if (w && w.en) speak(w.en); return; }
+case 'lshuffle': S.learnOrder=shuffle(S.learnOrder||[]); S.learnIdx=0; S.learnShow=false; render(); return;
+case 'start': case 'again': { const c=cat(S.catId); const m = a==='again' ? S.quiz.mode : b.dataset.mode; S.quiz=buildQuiz(c, m); S.view='quiz'; render(); window.scrollTo(0,0);
+const first=S.quiz.items[0]; if (first.k==='listen'){ const w = quizWord(S.quiz, first.wid); if (w.en) speak(w.en); } return; }
+case 'answer': { const q=S.quiz; if (q.state) return; q.chosen=b.dataset.id; answer(q.chosen===q.items[q.i].wid, 10); return; }
+case 'hint': S.quiz.hint=true; render(); return;
+case 'next': nextQ(); return;
+case 'quit': finishQuiz(); return;
+case 'tocat': S.view='cat'; S.tab='stats'; render(); window.scrollTo(0,0); return;
 }
 });
 /* ---------- start ---------- */
+function seedExample(){
+try{ if (localStorage.getItem('slovarik-seeded')) return; localStorage.setItem('slovarik-seeded','1'); }catch(e){ return; }
+const words = [['cat','кошка','[kæt]'],['dog','собака','[dɒɡ]'],['rabbit','кролик','[ˈræbɪt]'],['horse','лошадь','[hɔːs]'],['bird','птица','[bɜːd]'],['fish','рыба','[fɪʃ]']]
+.map((w,i)=>({ id:'w'+(i+1), en:w[0], ru:w[1], ipa:w[2], au:'' }));
+save('cats', 'example-animals', { name:'Животные (пример)', color:2, createdAt:Date.now(), words });
+}
+function init(){
+loadQueue();
 if (loadLocal()) ready = true;
 render();
 pull();
-if ('serviceWorker' in navigator) window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').then(r=>r.update&&r.update()).catch(()=>{}); });
+if ('serviceWorker' in navigator){
+window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').then(r => r.update && r.update()).catch(()=>{}); });
+}
+}
+init();
 })();
 </script>
 </body></html>

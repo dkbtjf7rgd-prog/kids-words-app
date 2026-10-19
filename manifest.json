@@ -1,6 +1,6 @@
 {
-  "name": "Таблица умножения",
-  "short_name": "Умножение",
+  "name": "Словарик",
+  "short_name": "Словарик",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
